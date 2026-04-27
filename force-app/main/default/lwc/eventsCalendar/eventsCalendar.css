@@ -1,0 +1,247 @@
+.sf-card {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
+    font-family: Arial, sans-serif;
+    color: #080707;
+    container-name: containerCard;
+    container-type: inline-size;
+    overflow-x: auto;
+}
+
+.view-panel {
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+    border-top: 0;
+    margin-top: 1%;
+    width: 100%;
+}
+
+.top-panel {
+    display: grid;
+    grid-template-columns: 3fr 3.3fr 2.5fr;
+    width: 100%;
+}
+
+.info-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h1 {
+    line-height: 1;
+}
+
+.titleYear {
+    box-sizing: border-box;
+    font-weight: bold;
+    margin-top: 0.5vh;
+    line-height: 1;
+}
+
+.titleDate {
+    box-sizing: border-box;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1;
+}
+
+.legend-panel {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.navigation-panel {
+    box-sizing: border-box;
+    padding: 0.5vw;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    justify-content: right;
+}
+
+.navigation-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.legend-item {
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.circle {
+    height: clamp(25px, 2vw, 35px);
+    width: clamp(25px, 2vw, 35px);
+    border-radius: 50%;
+    margin-right: 0.5vw;
+}
+
+.green {
+    background-color: rgb(10, 164, 10);
+
+}
+
+.red {
+    background-color: rgb(233, 77, 77);
+
+}
+
+.orange {
+    background-color: rgb(242, 174, 47);
+
+}
+
+.view-type {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+}
+
+.combobox {
+    --lwc-sizeXSmall: clamp(20px, 2.1vw, 35px);
+    width: 100px;
+}
+
+.view-type-label {
+    display: table-cell;
+    vertical-align: middle;
+    margin: 0;
+    line-height: 1;
+}
+
+@media (max-width: 2600px) {
+    .titleYear {
+        font-size: clamp(30px, 3.5vw, 50px);
+    }
+
+    .titleDate {
+        font-size: clamp(20px, 2.4vw, 32px);
+    }
+
+    .legend-item {
+        font-size: clamp(25px, 3vw, 28px);
+    }
+
+    .combobox {
+        font-size: 17px;
+    }
+
+    .view-type-label {
+        font-size: clamp(20px, 1.8vw, 26px);
+    }
+
+    .today-button {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 2000px) {
+    .top-panel {
+        display: grid;
+        grid-template-columns: 3.2fr 3.3fr 2.1fr;
+    }
+
+    .titleYear {
+        font-size: clamp(20px, 2.2vw, 50px);
+    }
+
+    .view-type {
+        padding-bottom: 2px;
+    }
+
+    .titleDate {
+        font-size: clamp(13px, 1.5vw, 32px);
+    }
+
+    .legend-item {
+        font-size: clamp(17px, 1.4vw, 28px);
+    }
+
+    .combobox {
+        font-size: 14px;
+    }
+
+    .view-type-label {
+        font-size: clamp(20px, 1.6vw, 26px);
+    }
+
+    .today-button {
+        font-size: 18px;
+    }
+}
+
+@container containerCard (max-width: 630px) {
+    .top-panel {
+        display: grid;
+
+        grid-template-columns: 1fr;
+        grid-template-rows: 0.6fr 0.85fr 1fr;
+
+        grid-template-areas:
+            "legend"
+            "info"
+            "navigation";
+    }
+
+    .legend-panel {
+        grid-area: legend;
+    }
+
+    .info-panel {
+        grid-area: info;
+        align-items: center;
+    }
+
+    .navigation-panel {
+        grid-area: navigation;
+        justify-content: center;
+    }
+
+    .titleYear {
+        margin-top: 0;
+    }
+}
+
+
+/* Monthly View CSS */
+
+.monthly-view-panel {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.date-tile {
+    height: 150px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    vertical-align: center;
+    border: 1px solid black;
+}
+
+.grayed-out {
+    background-color: rgb(197, 192, 192);
+}
+
+.day-name-cell {
+    text-align: center;
+    border: 1px solid black;
+    background-color: aliceblue;
+    font-size: clamp(12px, 1vw, 18px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}

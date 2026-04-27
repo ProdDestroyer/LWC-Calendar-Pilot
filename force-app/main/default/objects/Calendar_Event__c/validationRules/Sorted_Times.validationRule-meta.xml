@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sorted_Times</fullName>
+    <active>true</active>
+    <description>Avoids End Time from being before or equal Start Time</description>
+    <errorConditionFormula>End_Time__c &lt;= Start_Time__c</errorConditionFormula>
+    <errorMessage>Please enter valid start and end times</errorMessage>
+</ValidationRule>
