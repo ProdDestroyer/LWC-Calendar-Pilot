@@ -123,6 +123,11 @@ h1 {
 }
 
 @media (max-width: 2600px) {
+    .top-panel {
+        display: grid;
+        grid-template-columns: 3.2fr 3.3fr 2.1fr;
+    }
+    
     .titleYear {
         font-size: clamp(30px, 3.5vw, 50px);
     }
