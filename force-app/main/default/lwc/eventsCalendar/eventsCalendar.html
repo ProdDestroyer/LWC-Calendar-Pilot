@@ -52,14 +52,7 @@
         </div>
         <div class="view-panel">
             <template if:true={isMonthlyViewSelected}>
-                <div class="monthly-view-panel">
-                    <template for:each={weekDaysNames} for:item="dayName">
-                        <h3 key={dayName} class="day-name-cell">{dayName}</h3>
-                    </template>
-                    <template for:each={currentMonthTiles} for:item="dateTile">
-                        <div key={dateTile.dateString} class={dateTile.className}>{dateTile.dateString}</div>
-                    </template>
-                </div>
+                <c-monthly-view-calendar pivot-date={pivotDate}></c-monthly-view-calendar>
             </template>
             <template if:true={isDailyViewSelected}>
                 <div class="daily-view-container">

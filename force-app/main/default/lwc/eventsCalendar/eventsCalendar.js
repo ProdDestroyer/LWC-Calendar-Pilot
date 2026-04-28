@@ -1,16 +1,13 @@
 import { LightningElement } from 'lwc';
+import { WEEK_DAYS_NAMES, MONTHS_NAMES } from 'c/utils';
 
 export default class EventsCalendar extends LightningElement {
 
     selectedViewType = 'daily';
     pivotDate = new Date();
-    currentMonthTiles = [];
     currentDayHourBlocks = [];
-    weekDaysNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    monthsNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
     connectedCallback() {
-        this.buildCurrentMonthViewTiles();
         this.buildDailyViewBlocks();
     }
 
@@ -24,35 +21,6 @@ export default class EventsCalendar extends LightningElement {
         this.currentDayHourBlocks = dailyViewHourBlocks;
     }
 
-    buildCurrentMonthViewTiles() {
-        const targetMonthTiles = [];
-        const pivotDate = this.pivotDate;
-        const firstDayOfMonth = new Date(pivotDate.getFullYear(), pivotDate.getMonth(), 1);
-        const firstDayOfMonthWeekIndex = firstDayOfMonth.getDay();
-        const firstDayOfArray = new Date(firstDayOfMonth);
-        firstDayOfArray.setDate(firstDayOfMonth.getDate() - firstDayOfMonthWeekIndex);
-
-
-        const daysAmountInMonth = new Date(pivotDate.getFullYear(), pivotDate.getMonth() + 1, 0).getDate();
-        const pastAndCurrentMonthTilesAmount = firstDayOfMonthWeekIndex + daysAmountInMonth;
-        const futureTilesAmount = (7 - (pastAndCurrentMonthTilesAmount % 7)) % 7;
-        const totalTilesAmount = pastAndCurrentMonthTilesAmount + futureTilesAmount;
-
-        for (let i = 0; i < totalTilesAmount; i++) {
-            const currentDate = new Date(firstDayOfArray);
-            currentDate.setDate(currentDate.getDate() + i);
-            const grayedOut = (i < firstDayOfMonthWeekIndex || i > pastAndCurrentMonthTilesAmount - 1);
-            targetMonthTiles.push({
-                date: currentDate,
-                dateString: currentDate.toDateString(),
-                className: !grayedOut ? 'date-tile' : 'date-tile grayed-out',
-            });
-        }
-
-        this.currentMonthTiles = targetMonthTiles;
-    }
-
-
     //================================================= HANDLERS =================================================
     handleViewTypeOptionsChange(event) {
         this.selectedViewType = event.target.value;
@@ -60,15 +28,11 @@ export default class EventsCalendar extends LightningElement {
             const newPivotDate = new Date(this.pivotDate);
             newPivotDate.setDate(1);
             this.pivotDate = newPivotDate;
-            this.buildCurrentMonthViewTiles();
         }
     }
 
     handleTodayClick() {
         this.pivotDate = new Date();
-        if (this.isMonthlyViewSelected) {
-            this.buildCurrentMonthViewTiles();
-        }
     }
 
     handlePreviousClicked() {
@@ -76,7 +40,6 @@ export default class EventsCalendar extends LightningElement {
             const pivotDate = this.pivotDate;
             const newPivotDate = new Date(pivotDate.getFullYear(), pivotDate.getMonth() - 1, 1);
             this.pivotDate = newPivotDate;
-            this.buildCurrentMonthViewTiles();
         }
         if (this.isDailyViewSelected) {
             const pivotDate = this.pivotDate;
@@ -90,7 +53,6 @@ export default class EventsCalendar extends LightningElement {
             const pivotDate = this.pivotDate;
             const newPivotDate = new Date(pivotDate.getFullYear(), pivotDate.getMonth() + 1, 1);
             this.pivotDate = newPivotDate;
-            this.buildCurrentMonthViewTiles();
         } else if (this.isDailyViewSelected) {
             const pivotDate = this.pivotDate;
             const newPivotDate = new Date(pivotDate.getFullYear(), pivotDate.getMonth(), pivotDate.getDate() + 1);
@@ -120,7 +82,7 @@ export default class EventsCalendar extends LightningElement {
     }
 
     get currentDayName() {
-        return this.weekDaysNames[this.pivotDate.getDay()];
+        return WEEK_DAYS_NAMES[this.pivotDate.getDay()];
     }
 
     get currentYear() {
@@ -133,9 +95,9 @@ export default class EventsCalendar extends LightningElement {
             case 'weekly':
                 return 'Sun 6 of July - Sat 12 of July';
             case 'daily':
-                return `${this.weekDaysNames[pivotDate.getDay()]} ${pivotDate.getDate()} of ${this.monthsNames[pivotDate.getMonth()]}`
+                return `${WEEK_DAYS_NAMES[pivotDate.getDay()]} ${pivotDate.getDate()} of ${MONTHS_NAMES[pivotDate.getMonth()]}`
             case 'monthly':
-                return this.monthsNames[pivotDate.getMonth()];
+                return MONTHS_NAMES[pivotDate.getMonth()];
         }
     }
 }

@@ -1,0 +1,10 @@
+<template>
+    <div class="monthly-view-panel">
+        <template for:each={weekDaysNames} for:item="dayName">
+            <h3 key={dayName} class="day-name-cell">{dayName}</h3>
+        </template>
+        <template for:each={currentMonthTiles} for:item="dateTile">
+            <div key={dateTile.dateString} class={dateTile.className}>{dateTile.dateString}</div>
+        </template>
+    </div>
+</template>
