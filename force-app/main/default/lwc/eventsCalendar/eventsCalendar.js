@@ -5,21 +5,6 @@ export default class EventsCalendar extends LightningElement {
 
     selectedViewType = 'daily';
     pivotDate = new Date();
-    currentDayHourBlocks = [];
-
-    connectedCallback() {
-        this.buildDailyViewBlocks();
-    }
-
-    buildDailyViewBlocks() {
-        const dailyViewHourBlocks = [];
-        for (let i = 0; i < 24; i++) {
-            const suffix = (i < 13) ? 'am' : 'pm';
-            const formattedHour = (i % 12) + (12 * (Math.trunc(i / 12)));
-            dailyViewHourBlocks.push({ hour: i, hourString: `${formattedHour}:00${suffix}` });
-        }
-        this.currentDayHourBlocks = dailyViewHourBlocks;
-    }
 
     //================================================= HANDLERS =================================================
     handleViewTypeOptionsChange(event) {
@@ -61,6 +46,7 @@ export default class EventsCalendar extends LightningElement {
     }
 
     //================================================= GETTERS =================================================
+    
     get selectedYear() {
         return this.pivotDate.getFullYear();
     }
@@ -79,10 +65,6 @@ export default class EventsCalendar extends LightningElement {
 
     get isDailyViewSelected() {
         return this.selectedViewType == 'daily';
-    }
-
-    get currentDayName() {
-        return WEEK_DAYS_NAMES[this.pivotDate.getDay()];
     }
 
     get currentYear() {

@@ -55,26 +55,7 @@
                 <c-monthly-view-calendar pivot-date={pivotDate}></c-monthly-view-calendar>
             </template>
             <template if:true={isDailyViewSelected}>
-                <div class="daily-view-container">
-                    <h5 class="daily-rule-header"> Time </h5>
-                    <h5 class="daily-day-header"> {currentDayName} </h5>
-                    <div class="hours-rule">
-                        <template for:each={currentDayHourBlocks} for:item="hourBlock">
-                            <div key={hourBlock.hour} class="hour-block">
-                                <div class="first-half-hour-block">{hourBlock.hourString}</div>
-                                <div class="second-half-hour-block"></div>
-                            </div>
-                        </template>
-                    </div>
-                    <div class="day-column">
-                        <template for:each={currentDayHourBlocks} for:item="hourBlock">
-                            <div key={hourBlock.hour} class="hour-block">
-                                <div class="first-half-hour-block"></div>
-                                <div class="second-half-hour-block"></div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
+                <c-daily-view-calendar pivot-date={pivotDate}></c-daily-view-calendar>
             </template>
         </div>
     </div>
