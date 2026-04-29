@@ -4,7 +4,7 @@
 }
 
 .date-tile {
-    height: 150px;
+    height: 140px;
     text-align: center;
     align-items: center;
     justify-content: center;
@@ -24,4 +24,10 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    position: sticky;
+    top: 0;
+}
+
+.today-background {
+    background-color: aliceblue;
 }

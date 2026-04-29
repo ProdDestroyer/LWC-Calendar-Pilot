@@ -1,3 +1,13 @@
+.weekly-view-container {
+    display: grid;
+    grid-template-columns: 1fr repeat(7, 3fr);
+}
+
+.hours-rule-column {
+    display: flex;
+    flex-direction: column;
+}
+
 .hour-block {
     display: flex;
     flex-direction: column;
@@ -16,8 +26,6 @@ h5 {
     border: 1px solid black;
     border-top: 2px solid black;
     background-color: aliceblue;
-    position: sticky;
-    top: 0;
 }
 
 .day-column-header {
@@ -30,20 +38,6 @@ h5 {
     border-top: 0;
     border-bottom: 1px solid black;
     border-top: 1px solid lightgray;
-}
-
-@media (max-width: 2600px) {
-    .daily-view-container {
-        display: grid;
-        grid-template-columns: 1fr 4fr;
-    }
-}
-
-@media (max-width: 2000px) {
-    .daily-view-container {
-        display: grid;
-        grid-template-columns: 1fr 6fr;
-    }
 }
 
 .hours-rule-column {
@@ -60,6 +54,14 @@ h5 {
     flex-direction: column;
 }
 
-.today-background {
+.day-name-cell {
+    text-align: center;
+    border: 1px solid black;
     background-color: aliceblue;
+    font-size: clamp(12px, 1vw, 18px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
 }

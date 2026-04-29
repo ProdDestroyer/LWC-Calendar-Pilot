@@ -1,24 +1,15 @@
 import { LightningElement, api } from 'lwc';
-import {WEEK_DAYS_NAMES} from 'c/utils'
+import {WEEK_DAYS_NAMES, BUILD_DAY_HOURS_BLOCKS} from 'c/utils'
 
 export default class DailyViewCalendar extends LightningElement {
 
+    @api showHoursRuleColumn;
+    @api isToday;
     _pivotDate;
-    currentDayHourBlocks = [];
-
+    dayHoursBlocks = [];
 
     connectedCallback() {
-        this.buildDailyViewBlocks();
-    }
-
-    buildDailyViewBlocks() {
-        const dailyViewHourBlocks = [];
-        for (let i = 0; i < 24; i++) {
-            const suffix = (i < 13) ? 'am' : 'pm';
-            const formattedHour = (i % 12) + (12 * (Math.trunc(i / 12)));
-            dailyViewHourBlocks.push({ hour: i, hourString: `${formattedHour}:00${suffix}` });
-        }
-        this.currentDayHourBlocks = dailyViewHourBlocks;
+        this.dayHoursBlocks = BUILD_DAY_HOURS_BLOCKS();
     }
 
     //=========================================== GETTERS & SETTERS ===========================================
@@ -33,6 +24,10 @@ export default class DailyViewCalendar extends LightningElement {
     }
 
     get currentDayName() {
-        return WEEK_DAYS_NAMES[this.pivotDate.getDay()];
+        return WEEK_DAYS_NAMES[this._pivotDate.getDay()];
+    }
+
+    get hourBlockClass() {
+        return this.isToday ? 'hour-block today-background': 'hour-block';
     }
 }

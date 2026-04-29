@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
-import { WEEK_DAYS_NAMES } from 'c/utils';
+import { WEEK_DAYS_NAMES, ARE_DATES_EQUAL } from 'c/utils';
 
 export default class MonthlyViewCalendar extends LightningElement {
     _pivotDate;
@@ -30,7 +30,7 @@ export default class MonthlyViewCalendar extends LightningElement {
             targetMonthTiles.push({
                 date: currentDate,
                 dateString: currentDate.toDateString(),
-                className: !grayedOut ? 'date-tile' : 'date-tile grayed-out',
+                className: !grayedOut ? (ARE_DATES_EQUAL(currentDate, new Date())) ? 'date-tile today-background': 'date-tile' : 'date-tile grayed-out',
             });
         }
     

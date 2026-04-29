@@ -1,22 +1,36 @@
 <template>
-    <div class="daily-view-container">
-        <h5 class="daily-rule-header"> Time </h5>
-        <h5 class="daily-day-header"> {currentDayName} </h5>
-        <div class="hours-rule">
-            <template for:each={currentDayHourBlocks} for:item="hourBlock">
-                <div key={hourBlock.hour} class="hour-block">
-                    <div class="first-half-hour-block">{hourBlock.hourString}</div>
-                    <div class="second-half-hour-block"></div>
-                </div>
-            </template>
+    <!-- When used by daily view -->
+    <template if:true={showHoursRuleColumn}>
+        <div class="daily-view-container">
+            <h5 class="hours-rule-header"> Time </h5>
+            <h5 class="day-column-header"> {currentDayName} </h5>
+            <div class="hours-rule-column">
+                <template for:each={dayHoursBlocks} for:item="hourBlock">
+                    <div key={hourBlock.hour} class="hour-block">
+                        <div class="first-half-hour-block">{hourBlock.hourString}</div>
+                        <div class="second-half-hour-block"></div>
+                    </div>
+                </template>
+            </div>
+            <div class="day-column">
+                <template for:each={dayHoursBlocks} for:item="hourBlock">
+                    <div key={hourBlock.hour} class="hour-block">
+                        <div class="first-half-hour-block"></div>
+                        <div class="second-half-hour-block"></div>
+                    </div>
+                </template>
+            </div>
         </div>
+    </template>
+    <!-- When used by Weekly View -->
+    <template if:false={showHoursRuleColumn}>
         <div class="day-column">
-            <template for:each={currentDayHourBlocks} for:item="hourBlock">
-                <div key={hourBlock.hour} class="hour-block">
+            <template for:each={dayHoursBlocks} for:item="hourBlock">
+                <div key={hourBlock.hour} class={hourBlockClass}>
                     <div class="first-half-hour-block"></div>
                     <div class="second-half-hour-block"></div>
                 </div>
             </template>
         </div>
-    </div>
+    </template>
 </template>
