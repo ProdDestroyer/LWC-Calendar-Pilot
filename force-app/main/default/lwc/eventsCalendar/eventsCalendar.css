@@ -14,6 +14,7 @@
     container-name: containerCard;
     container-type: inline-size;
     overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .view-panel {
@@ -23,6 +24,15 @@
     border-top: 0;
     margin-top: 1%;
     width: 100%;
+    min-width: fit-content;
+    height: 600px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.scroll-container::-webkit-scrollbar {
+    display: none;
 }
 
 .top-panel {
@@ -118,17 +128,26 @@ h1 {
 .view-type-label {
     display: table-cell;
     vertical-align: middle;
-    margin: 0;
+    margin-right: 0.3vw;
     line-height: 1;
 }
 
 @media (max-width: 2600px) {
+    .top-panel {
+        display: grid;
+        grid-template-columns: 3.2fr 3.3fr 2.1fr;
+    }
+
     .titleYear {
         font-size: clamp(30px, 3.5vw, 50px);
     }
 
     .titleDate {
         font-size: clamp(20px, 2.4vw, 32px);
+    }
+
+    .view-type {
+        padding-bottom: 4px;
     }
 
     .legend-item {
@@ -183,7 +202,7 @@ h1 {
     }
 }
 
-@container containerCard (max-width: 630px) {
+@container containerCard (max-width: 700px) {
     .top-panel {
         display: grid;
 
@@ -210,38 +229,11 @@ h1 {
         justify-content: center;
     }
 
+    .view-type {
+        padding-bottom: 2px;
+    }
+
     .titleYear {
         margin-top: 0;
     }
-}
-
-
-/* Monthly View CSS */
-
-.monthly-view-panel {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-}
-
-.date-tile {
-    height: 150px;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    vertical-align: center;
-    border: 1px solid black;
-}
-
-.grayed-out {
-    background-color: rgb(197, 192, 192);
-}
-
-.day-name-cell {
-    text-align: center;
-    border: 1px solid black;
-    background-color: aliceblue;
-    font-size: clamp(12px, 1vw, 18px);
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
 }

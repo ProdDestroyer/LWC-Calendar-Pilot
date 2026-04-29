@@ -1,0 +1,24 @@
+<template>
+    <div class="weekly-view-container">
+
+        <!-- header -->
+        <h3 class="day-name-cell"> Time </h3>
+        <template for:each={weekDays} for:item="weekDay">
+            <h3 key={weekDay.dayName} class="day-name-cell">{weekDay.dayName} {weekDay.dateNumber}</h3>
+        </template>
+
+        <!-- columns -->
+        <div class="hours-rule-column">
+            <template for:each={dayHoursBlocks} for:item="hourBlock">
+                <div key={hourBlock.hour} class="hour-block">
+                    <div class="first-half-hour-block">{hourBlock.hourString}</div>
+                    <div class="second-half-hour-block"></div>
+                </div>
+            </template>
+        </div>
+        <template for:each={weekDays} for:item="weekDay">
+            <c-daily-view-calendar key={weekDay.dateString} pivot-date={pivotDate} is-today={weekDay.isToday}>
+            </c-daily-view-calendar>
+        </template>
+    </div>
+</template>

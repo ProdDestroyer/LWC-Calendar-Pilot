@@ -1,85 +1,89 @@
 import { LightningElement } from 'lwc';
+import { WEEK_DAYS_NAMES, MONTHS_NAMES } from 'c/utils';
 
 export default class EventsCalendar extends LightningElement {
 
-    selectedViewType = 'monthly';
-    pivotDate = new Date();
-    currentMonthTiles = [];
-    weekDaysNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    
-    connectedCallback() {
-        this.buildCurrentMonthViewTiles();
-    }
-
-    buildCurrentMonthViewTiles() {
-        const targetMonthTiles = [];
-        const pivotDate = this.pivotDate;
-        const firstDayOfMonth = new Date(pivotDate.getFullYear(), pivotDate.getMonth(), 1);
-        const firstDayOfMonthWeekIndex = firstDayOfMonth.getDay();
-        const firstDayOfArray = new Date(firstDayOfMonth);
-        firstDayOfArray.setDate(firstDayOfMonth.getDate() - firstDayOfMonthWeekIndex);
-
-
-        const daysAmountInMonth = new Date(pivotDate.getFullYear(), pivotDate.getMonth() + 1, 0).getDate();
-        const pastAndCurrentMonthTilesAmount = firstDayOfMonthWeekIndex + daysAmountInMonth;
-        const futureTilesAmount = (7 - (pastAndCurrentMonthTilesAmount % 7)) % 7;
-        const totalTilesAmount = pastAndCurrentMonthTilesAmount + futureTilesAmount;
-
-        for (let i = 0; i < totalTilesAmount; i++) {
-            const currentDate = new Date(firstDayOfArray);
-            currentDate.setDate(currentDate.getDate() + i);
-            const grayedOut = (i < firstDayOfMonthWeekIndex || i > pastAndCurrentMonthTilesAmount -1 );
-            targetMonthTiles.push({ 
-                date: currentDate, 
-                dateString: currentDate.toDateString(),
-                className: !grayedOut ? 'date-tile' : 'date-tile grayed-out',
-                });
-        }
-
-        this.currentMonthTiles = targetMonthTiles;
-    }
-
+    selectedViewType = 'weekly';
+    pivotDate;
+    isLoading = true;
 
     //================================================= HANDLERS =================================================
+
+    connectedCallback() {
+        this.pivotDate = this.handlePivotDateReset(new Date());
+        this.isLoading = false;
+    }
     handleViewTypeOptionsChange(event) {
         this.selectedViewType = event.target.value;
+        this.pivotDate = this.handlePivotDateReset(this.pivotDate);
     }
 
     handleTodayClick() {
-        this.pivotDate = new Date();
-        if(this.isMonthlyViewSelected) {
-            this.buildCurrentMonthViewTiles();
+        this.pivotDate = this.handlePivotDateReset(new Date());
+    }
+
+    handlePivotDateReset = (baseDate) => {
+        let newPivotDate = new Date(baseDate);
+
+        switch (this.selectedViewType) {
+            case 'monthly':
+                newPivotDate = new Date(newPivotDate.getFullYear(), newPivotDate.getMonth(), 1);
+                break;
+            case 'weekly':
+                const todaysWeekIndex = newPivotDate.getDay();
+                newPivotDate = new Date(newPivotDate);
+                newPivotDate.setDate(newPivotDate.getDate() - todaysWeekIndex);
+                break;
         }
+        return newPivotDate;
     }
 
     handlePreviousClicked() {
-        if (this.isMonthlyViewSelected) {
-            const pivotDate = this.pivotDate;
-            const newPivotDate = new Date(pivotDate.getFullYear(), pivotDate.getMonth() - 1, 1);
-            this.pivotDate = newPivotDate;
-            console.log('new pivot date: ', this.pivotDate.toDateString());
-            this.buildCurrentMonthViewTiles();
+        let pivotDate = this.pivotDate;
+        switch (this.selectedViewType) {
+            case 'monthly':
+                pivotDate = new Date(pivotDate.getFullYear(), pivotDate.getMonth() - 1, 1);
+                break;
+            case 'weekly':
+                pivotDate = new Date(pivotDate);
+                pivotDate.setDate(pivotDate.getDate() - 7);
+                break;
+            case 'daily':
+                pivotDate = new Date(pivotDate);
+                pivotDate.setDate(pivotDate.getDate() - 1);
+                break;
         }
+        this.pivotDate = pivotDate;
     }
-    
+
     handleNextClicked() {
-        if (this.isMonthlyViewSelected) {
-            const pivotDate = this.pivotDate;
-            const newPivotDate = new Date(pivotDate.getFullYear(), pivotDate.getMonth() + 1, 1);
-            this.pivotDate = newPivotDate;
-            console.log('new pivot date: ', this.pivotDate.toDateString());
-            this.buildCurrentMonthViewTiles();
+        let pivotDate = this.pivotDate;
+        switch (this.selectedViewType) {
+            case 'monthly':
+                pivotDate = new Date(pivotDate.getFullYear(), pivotDate.getMonth() + 1, 1);
+                break;
+            case 'weekly':
+                pivotDate = new Date(pivotDate);
+                pivotDate.setDate(pivotDate.getDate() + 7);
+                break;
+            case 'daily':
+                pivotDate = new Date(pivotDate);
+                pivotDate.setDate(pivotDate.getDate() + 1);
+                break;
         }
+        this.pivotDate = pivotDate;
+    }
+
+    weeklyViewDayTextBuilder() {
+        const startDate = new Date(this.pivotDate);
+        const endDate = new Date(this.pivotDate);
+        endDate.setDate(endDate.getDate() + 6);
+        let text = `${(WEEK_DAYS_NAMES[startDate.getDay()]).substring(0, 3)} ${startDate.getDate()} of ${(MONTHS_NAMES[startDate.getMonth()]).substring(0, 3)}`;
+        text += ` - ${(WEEK_DAYS_NAMES[endDate.getDay()]).substring(0, 3)} ${endDate.getDate()} of ${(MONTHS_NAMES[endDate.getMonth()]).substring(0, 3)}`;
+        return text;
     }
 
     //================================================= GETTERS =================================================
-    get selectedYear() {
-        return '2026';
-    }
-
-    get dateText() {
-        return 'Sun 6 of July - Sat 12 of July';
-    }
 
     get viewTypeOptions() {
         return [
@@ -89,7 +93,31 @@ export default class EventsCalendar extends LightningElement {
         ]
     }
 
+    get selectedYear() {
+        return this.pivotDate.getFullYear();
+    }
+
+    get dateText() {
+        const pivotDate = this.pivotDate;
+        switch (this.selectedViewType) {
+            case 'weekly':
+                return this.weeklyViewDayTextBuilder();
+            case 'daily':
+                return `${WEEK_DAYS_NAMES[pivotDate.getDay()]} ${pivotDate.getDate()} of ${MONTHS_NAMES[pivotDate.getMonth()]}`
+            case 'monthly':
+                return MONTHS_NAMES[pivotDate.getMonth()];
+        }
+    }
+
     get isMonthlyViewSelected() {
         return this.selectedViewType == 'monthly';
+    }
+
+    get isDailyViewSelected() {
+        return this.selectedViewType == 'daily';
+    }
+
+    get isWeeklyViewSelected() {
+        return this.selectedViewType == 'weekly';
     }
 }

@@ -1,0 +1,33 @@
+.monthly-view-panel {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.date-tile {
+    height: 140px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    vertical-align: center;
+    border: 1px solid black;
+}
+
+.grayed-out {
+    background-color: rgb(197, 192, 192);
+}
+
+.day-name-cell {
+    text-align: center;
+    border: 1px solid black;
+    background-color: aliceblue;
+    font-size: clamp(12px, 1vw, 18px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+}
+
+.today-background {
+    background-color: aliceblue;
+}
