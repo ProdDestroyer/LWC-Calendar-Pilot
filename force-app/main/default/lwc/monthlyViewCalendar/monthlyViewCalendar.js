@@ -1,12 +1,25 @@
 import { LightningElement, api } from 'lwc';
 import { WEEK_DAYS_NAMES, ARE_DATES_EQUAL } from 'c/utils';
+import getCalendarEvents from '@salesforce/apex/EventsCalendarController.getCalendarEvents'
+import getUserTimeZone from '@salesforce/apex/EventsCalendarController.getUserTimeZone'
 
 export default class MonthlyViewCalendar extends LightningElement {
     _pivotDate;
     currentMonthTiles = [];
+    isLoading = true;
+    calendarEvents = [];
 
-    connectedCallback() {
+    async connectedCallback() {
         this.buildCurrentMonthViewTiles();
+        await this.retrieveCalendarEvents();
+        this.isLoading = false;
+    }
+
+    async retrieveCalendarEvents() {
+            const { response, errorMessage, isError } = await getCalendarEvents({
+                startDate: this.currentMonthTiles[0].date,
+                endDate: this.currentMonthTiles[this.currentMonthTiles.length - 1].date,
+            });
     }
 
     buildCurrentMonthViewTiles() {
@@ -31,16 +44,16 @@ export default class MonthlyViewCalendar extends LightningElement {
                 date: currentDate,
                 dateNumber: currentDate.getDate(),
                 dateString: currentDate.toDateString(),
-                className: !grayedOut ? (ARE_DATES_EQUAL(currentDate, new Date())) ? 'date-tile today-background': 'date-tile' : 'date-tile grayed-out',
+                className: !grayedOut ? (ARE_DATES_EQUAL(currentDate, new Date())) ? 'date-tile today-background' : 'date-tile' : 'date-tile grayed-out',
             });
         }
-    
+
         this.currentMonthTiles = targetMonthTiles;
     }
 
     //=========================================== GETTERS & SETTERS ===========================================
 
-    @api 
+    @api
     get pivotDate() {
         return this._pivotDate;
     }

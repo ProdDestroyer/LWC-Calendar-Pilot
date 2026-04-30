@@ -5,14 +5,13 @@ export default class EventsCalendar extends LightningElement {
 
     selectedViewType = 'weekly';
     pivotDate;
-    isLoading = true;
 
     //================================================= HANDLERS =================================================
 
-    connectedCallback() {
+    async connectedCallback() {
         this.pivotDate = this.handlePivotDateReset(new Date());
-        this.isLoading = false;
     }
+
     handleViewTypeOptionsChange(event) {
         this.selectedViewType = event.target.value;
         this.pivotDate = this.handlePivotDateReset(this.pivotDate);
