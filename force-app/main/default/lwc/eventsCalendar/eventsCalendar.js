@@ -8,7 +8,7 @@ export default class EventsCalendar extends LightningElement {
 
     //================================================= HANDLERS =================================================
 
-    async connectedCallback() {
+    connectedCallback() {
         this.pivotDate = this.handlePivotDateReset(new Date());
     }
 
