@@ -29,6 +29,7 @@ export default class MonthlyViewCalendar extends LightningElement {
             const grayedOut = (i < firstDayOfMonthWeekIndex || i > pastAndCurrentMonthTilesAmount - 1);
             targetMonthTiles.push({
                 date: currentDate,
+                dateNumber: currentDate.getDate(),
                 dateString: currentDate.toDateString(),
                 className: !grayedOut ? (ARE_DATES_EQUAL(currentDate, new Date())) ? 'date-tile today-background': 'date-tile' : 'date-tile grayed-out',
             });

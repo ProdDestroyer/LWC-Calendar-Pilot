@@ -5,11 +5,9 @@
 
 .date-tile {
     height: 140px;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    vertical-align: center;
+    text-align: end;
     border: 1px solid black;
+    justify-content: end;
 }
 
 .grayed-out {
@@ -30,4 +28,9 @@
 
 .today-background {
     background-color: aliceblue;
+}
+
+h4 {
+    font-size: clamp(10px, 2vw, 18px);
+    margin-right: 0.2vw;
 }
