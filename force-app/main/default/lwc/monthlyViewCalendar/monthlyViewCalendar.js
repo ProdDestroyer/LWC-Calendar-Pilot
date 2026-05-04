@@ -1,7 +1,7 @@
 import { LightningElement, api } from 'lwc';
 import { WEEK_DAYS_NAMES, ARE_DATES_EQUAL } from 'c/utils';
 import getCalendarEvents from '@salesforce/apex/EventsCalendarController.getCalendarEvents'
-import getUserTimeZone from '@salesforce/apex/EventsCalendarController.getUserTimeZone'
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';    
 
 export default class MonthlyViewCalendar extends LightningElement {
     _pivotDate;
@@ -16,10 +16,16 @@ export default class MonthlyViewCalendar extends LightningElement {
     }
 
     async retrieveCalendarEvents() {
-            const { response, errorMessage, isError } = await getCalendarEvents({
-                startDate: this.currentMonthTiles[0].date,
-                endDate: this.currentMonthTiles[this.currentMonthTiles.length - 1].date,
-            });
+        const { calendarEventsWrapper: { calendarEvents, timeZone }, errorMessage, isError } = await getCalendarEvents({
+            startDate: this.currentMonthTiles[0].date,
+            endDate: this.currentMonthTiles[this.currentMonthTiles.length - 1].date,
+        });
+
+        if (isError) {
+            showToast('Error', errorMessage, 'error');
+        } else {
+            this.calendarEvents = calendarEvents;
+        }
     }
 
     buildCurrentMonthViewTiles() {
@@ -49,6 +55,38 @@ export default class MonthlyViewCalendar extends LightningElement {
         }
 
         this.currentMonthTiles = targetMonthTiles;
+    }
+
+    buildCurrentUserTime(date, timeZone) {
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: timeZone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+
+        const parts = formatter.formatToParts(new Date(date));
+
+        return Object.fromEntries(
+            parts
+                .filter(p => p.type !== 'literal')
+                .map(p => [p.type, p.value])
+        );
+
+    }
+
+    showToast(title, message, variant) {
+        const evt = new ShowToastEvent({
+            title,
+            message,
+            variant,
+            mode: 'dismissable' //could try sticky
+        });
+        this.dispatchEvent(evt);
     }
 
     //=========================================== GETTERS & SETTERS ===========================================
