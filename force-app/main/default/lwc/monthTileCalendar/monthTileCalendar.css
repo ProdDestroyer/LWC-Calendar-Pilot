@@ -1,0 +1,67 @@
+.today-background {
+    background-color: aliceblue;
+}
+
+.date-tile {
+    height: 140px;
+    border: 1px solid black;
+    position: relative;
+}
+
+.grayed-out {
+    background-color: rgb(227, 227, 227);
+}
+
+h4 {
+    font-size: clamp(10px, 2vw, 18px);
+    margin-right: 0.2vw;
+    text-align: right;
+}
+
+.calendar-events-container {
+    margin-top: 1%;
+    margin-left: 2%;
+    margin-right: 4%;
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+}
+
+.calendar-event-box {
+    border-left: 5px solid;
+    border-radius: 3px;
+    min-width: 0;
+}
+
+.truncate-text {
+    font-weight: 700;
+    font-size: clamp(13px, 2vw, 20px);
+    line-height: 0.3;
+}
+
+.remove-border {
+    border: none;
+}
+
+h3 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: clamp(13px, 1.8vw, 20px);
+    font-weight: 700;
+    min-width: 0;
+}
+
+.red {
+    border-color: red;
+    background-color: rgb(239, 95, 95);
+}
+
+.yellow {
+    border-color: orange;
+    background-color: rgb(248, 194, 94);
+}
+
+.green {
+    border-color: green;
+    background-color: rgb(97, 209, 97);
+}

@@ -5,9 +5,7 @@
                 <h3 key={dayName} class="day-name-cell">{dayName}</h3>
             </template>
             <template for:each={currentMonthTiles} for:item="dateTile">
-                <div key={dateTile.dateString} class={dateTile.className}>
-                    <h4>{dateTile.dateNumber}</h4>
-                </div>
+                <c-month-tile-calendar key={dateTile.dateString} month-tile-data={dateTile}></c-month-tile-calendar>
             </template>
         </div>
     </template>
