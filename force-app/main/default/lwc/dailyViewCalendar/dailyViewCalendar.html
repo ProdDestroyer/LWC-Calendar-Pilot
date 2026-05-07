@@ -19,6 +19,12 @@
                         <div class="second-half-hour-block"></div>
                     </div>
                 </template>
+                <template if:true={areCalendarEventsReady}>
+                    <template for:each={calendarEvents} for:item="calendarEvent">
+                        <div key={calendarEvent.id} style={calendarEvent.style}>
+                        </div>
+                    </template>
+                </template>
             </div>
         </div>
     </template>

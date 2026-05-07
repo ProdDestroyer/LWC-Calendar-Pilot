@@ -3,6 +3,7 @@
     grid-template-columns: repeat(7, 1fr);
     width: 100%;
     max-width: 100%;
+    border: 1px solid black;
 }
 
 .day-name-cell {
@@ -20,6 +21,18 @@
 
 .today-background {
     background-color: aliceblue;
+}
+
+.spinner-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* remove gray overlay */
+.slds-spinner_container {
+    background: transparent !important;
 }
 
 c-month-tile-calendar {

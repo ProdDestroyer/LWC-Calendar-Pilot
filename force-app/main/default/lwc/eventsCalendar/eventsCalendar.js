@@ -3,7 +3,7 @@ import { WEEK_DAYS_NAMES, MONTHS_NAMES } from 'c/utils';
 
 export default class EventsCalendar extends LightningElement {
 
-    selectedViewType = 'weekly';
+    selectedViewType = 'monthly';
     pivotDate;
 
     //================================================= HANDLERS =================================================

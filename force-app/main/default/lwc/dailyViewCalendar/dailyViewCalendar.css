@@ -58,6 +58,7 @@ h5 {
     border-bottom: none;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .today-background {
