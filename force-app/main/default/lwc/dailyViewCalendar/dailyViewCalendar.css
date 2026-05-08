@@ -18,6 +18,7 @@ h5 {
     background-color: aliceblue;
     position: sticky;
     top: 0;
+    z-index: 20;
 }
 
 .day-column-header {
@@ -63,4 +64,16 @@ h5 {
 
 .today-background {
     background-color: aliceblue;
+}
+
+.spinner-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* remove gray overlay */
+.slds-spinner_container {
+    background: transparent !important;
 }

@@ -57,7 +57,7 @@
                 <c-monthly-view-calendar pivot-date={pivotDate}></c-monthly-view-calendar>
             </template>
             <template if:true={isDailyViewSelected}>
-                <c-daily-view-calendar pivot-date={pivotDate} show-hours-rule-column="true"></c-daily-view-calendar>
+                <c-daily-view-calendar pivot-date={pivotDate} is-weekly-view="true"></c-daily-view-calendar>
             </template>
             <template if:true={isWeeklyViewSelected}>
                 <c-weekly-view-calendar pivot-date={pivotDate}></c-weekly-view-calendar>

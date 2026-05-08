@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
-import { WEEK_DAYS_NAMES, ARE_DATES_EQUAL, PRINT_ERROR } from 'c/utils';
-import getCalendarEvents from '@salesforce/apex/EventsCalendarController.getCalendarEvents'
+import { BUILD_CURRENT_USER_TIME, WEEK_DAYS_NAMES, ARE_DATES_EQUAL, PRINT_ERROR } from 'c/utils';
+import getCalendarEvents from '@salesforce/apex/EventsCalendarController.getCalendarEvents';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class MonthlyViewCalendar extends LightningElement {
@@ -46,8 +46,8 @@ export default class MonthlyViewCalendar extends LightningElement {
             this.calendarEventsMap = {};
 
             calendarEvents.forEach(calendarEvent => {
-                const startTime = this.buildCurrentUserTime(new Date(calendarEvent.Start_Time__c), timeZone);
-                const endTime = this.buildCurrentUserTime(new Date(calendarEvent.End_Time__c), timeZone);
+                const startTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.Start_Time__c), timeZone);
+                const endTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.End_Time__c), timeZone);
                 const key = `${startTime.month}-${startTime.day}`;
                 const eventType = calendarEvent.Type__c;
 
@@ -116,29 +116,6 @@ export default class MonthlyViewCalendar extends LightningElement {
             futureTilesAmount,
             totalTilesAmount,
         };
-    }
-
-    buildCurrentUserTime(date, timeZone) {
-        const formatter = new Intl.DateTimeFormat('en-US', {
-            timeZone: timeZone,
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            weekday: 'long',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        });
-
-        const parts = formatter.formatToParts(new Date(date));
-
-        return Object.fromEntries(
-            parts
-                .filter(p => p.type !== 'literal')
-                .map(p => [p.type, p.value])
-        );
-
     }
 
     showToast(title, message, variant) {
