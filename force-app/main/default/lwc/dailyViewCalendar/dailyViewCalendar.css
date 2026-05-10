@@ -77,3 +77,7 @@ h5 {
 .slds-spinner_container {
     background: transparent !important;
 }
+
+.calendar-event-box {
+    overflow: hidden;
+}

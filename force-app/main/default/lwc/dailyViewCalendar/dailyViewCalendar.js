@@ -8,6 +8,7 @@ export default class DailyViewCalendar extends LightningElement {
     @api isWeeklyView;
     @api isToday;
     @api calendarEvents = [];
+    calendarEventsMap = {};
     _pivotDate;
     dayHoursBlocks = [];
 
@@ -29,6 +30,7 @@ export default class DailyViewCalendar extends LightningElement {
         this.isLoading = true;
         this.areCalendarEventsReady = false;
         this.calendarEvents = [];
+        this.calendarEventsMap = [];
         this.requestCalendarEvents();
     }
 
@@ -83,13 +85,31 @@ export default class DailyViewCalendar extends LightningElement {
                 background-color: ${backgroundColor};
                 `;
 
-                return {
+                const transformedCalendarEvent = {
                     ...calendarevent,
                     style,
-                }
+                    startTimeString: `${startTime.hour}:${startTime.minute}:${startTime.second}`,
+                    endTimeString: `${endTime.hour}:${endTime.minute}:${endTime.second}`,
+                    height,
+                };
+
+                this.calendarEventsMap[calendarevent.id] = transformedCalendarEvent;
+
+                return transformedCalendarEvent;
             });
             this.areCalendarEventsReady = true;
         }
+    }
+
+    handleCalendarEventHover(event) {
+        const height = this.calendarEventsMap[event.target.dataset.id].height;
+        event.target.style.height = 'auto';
+        const autoHeight = event.target.getBoundingClientRect().height;
+        event.target.style.height = (autoHeight < height) ? `${height}px` : 'auto';
+    }
+    
+    handleMouseLeave(event) {
+        event.target.style.height = `${this.calendarEventsMap[event.target.dataset.id].height}px`;
     }
 
     //=========================================== GETTERS & SETTERS ===========================================

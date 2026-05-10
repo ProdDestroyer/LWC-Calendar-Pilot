@@ -22,7 +22,16 @@
                     </template>
                     <template if:true={areCalendarEventsReady}>
                         <template for:each={calendarEvents} for:item="calendarEvent">
-                            <div key={calendarEvent.id} style={calendarEvent.style}>
+                            <div 
+                             key={calendarEvent.id}
+                             style={calendarEvent.style}
+                             class="calendar-event-box"
+                             onmouseenter={handleCalendarEventHover}
+                             onmouseleave={handleMouseLeave}
+                             data-id={calendarEvent.id}>
+                                <h2 style="font-size: clamp(14px, 3vw, 25px)">{calendarEvent.title}</h2>
+                                <h4 style="font-size: clamp(14px, 2vw, 25px)">{calendarEvent.startTimeString}</h4>
+                                <h4 style="font-size: clamp(14px, 2vw, 25px)">{calendarEvent.endTimeString}</h4>
                             </div>
                         </template>
                     </template>
