@@ -106,10 +106,12 @@ export default class DailyViewCalendar extends LightningElement {
         event.target.style.height = 'auto';
         const autoHeight = event.target.getBoundingClientRect().height;
         event.target.style.height = (autoHeight < height) ? `${height}px` : 'auto';
+        event.target.style.zIndex = '60';
     }
     
     handleMouseLeave(event) {
         event.target.style.height = `${this.calendarEventsMap[event.target.dataset.id].height}px`;
+        event.target.style.zIndex = 'auto';
     }
 
     //=========================================== GETTERS & SETTERS ===========================================
