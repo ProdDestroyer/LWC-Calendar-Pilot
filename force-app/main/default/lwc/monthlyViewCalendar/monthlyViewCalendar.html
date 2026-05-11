@@ -1,12 +1,17 @@
 <template>
-    <div class="monthly-view-panel">
-        <template for:each={weekDaysNames} for:item="dayName">
-            <h3 key={dayName} class="day-name-cell">{dayName}</h3>
-        </template>
-        <template for:each={currentMonthTiles} for:item="dateTile">
-            <div key={dateTile.dateString} class={dateTile.className}>
-                <h4>{dateTile.dateNumber}</h4>
-            </div>
-        </template>
-    </div>
+    <template if:false={isLoading}>
+        <div class="monthly-view-panel">
+            <template for:each={weekDaysNames} for:item="dayName">
+                <h3 key={dayName} class="day-name-cell">{dayName}</h3>
+            </template>
+            <template for:each={currentMonthTiles} for:item="dateTile">
+                <c-month-tile-calendar key={dateTile.dateString} month-tile-data={dateTile}></c-month-tile-calendar>
+            </template>
+        </div>
+    </template>
+    <template if:true={isLoading}>
+        <div class="spinner-container">
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+    </template>
 </template>

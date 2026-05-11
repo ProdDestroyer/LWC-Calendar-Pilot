@@ -1,0 +1,17 @@
+<template>
+    <div class={monthTileData.className}>
+        <h4>{monthTileData.dateNumber}</h4>
+        <div class="calendar-events-container">
+            <template for:each={calendarEvents} for:item="calendarEvent">
+                <div key={calendarEvent.id} class={calendarEvent.class}>
+                    <h3>{calendarEvent.title}</h3>
+                </div>
+            </template>
+            <template if:true={truncateEvents}>
+                <div class='calendar-event-box remove-border'>
+                <h2 class="truncate-text">...</h2>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

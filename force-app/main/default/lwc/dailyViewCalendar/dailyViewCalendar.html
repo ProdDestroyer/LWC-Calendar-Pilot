@@ -1,36 +1,58 @@
 <template>
-    <!-- When used by daily view -->
-    <template if:true={showHoursRuleColumn}>
-        <div class="daily-view-container">
-            <h5 class="hours-rule-header"> Time </h5>
-            <h5 class="day-column-header"> {currentDayName} </h5>
-            <div class="hours-rule-column">
-                <template for:each={dayHoursBlocks} for:item="hourBlock">
-                    <div key={hourBlock.hour} class="hour-block">
-                        <div class="first-half-hour-block">{hourBlock.hourString}</div>
-                        <div class="second-half-hour-block"></div>
-                    </div>
-                </template>
+        <!-- When used by daily view -->
+    <template if:false={isLoading}>
+        <template if:true={isWeeklyView}>
+            <div class="daily-view-container">
+                <h5 class="hours-rule-header"> Time </h5>
+                <h5 class="day-column-header"> {currentDayName} </h5>
+                <div class="hours-rule-column">
+                    <template for:each={dayHoursBlocks} for:item="hourBlock">
+                        <div key={hourBlock.hour} class="hour-block">
+                            <div class="first-half-hour-block">{hourBlock.hourString}</div>
+                            <div class="second-half-hour-block"></div>
+                        </div>
+                    </template>
+                </div>
+                <div class="day-column">
+                    <template for:each={dayHoursBlocks} for:item="hourBlock">
+                        <div key={hourBlock.hour} class="hour-block">
+                            <div class="first-half-hour-block"></div>
+                            <div class="second-half-hour-block"></div>
+                        </div>
+                    </template>
+                    <template if:true={areCalendarEventsReady}>
+                        <template for:each={calendarEvents} for:item="calendarEvent">
+                            <div 
+                             key={calendarEvent.id}
+                             style={calendarEvent.style}
+                             class="calendar-event-box"
+                             onmouseenter={handleCalendarEventHover}
+                             onmouseleave={handleMouseLeave}
+                             data-id={calendarEvent.id}>
+                                <h2><span>Title: </span>{calendarEvent.title}</h2>
+                                <h4><span>Start Time: </span>{calendarEvent.startTimeString}</h4>
+                                <h4><span>End Time: </span>{calendarEvent.endTimeString}</h4>
+                            </div>
+                        </template>
+                    </template>
+                </div>
             </div>
+        </template>
+        <!-- When used by Weekly View -->
+        <template if:false={isWeeklyView}>
             <div class="day-column">
                 <template for:each={dayHoursBlocks} for:item="hourBlock">
-                    <div key={hourBlock.hour} class="hour-block">
+                    <div key={hourBlock.hour} class={hourBlockClass}>
                         <div class="first-half-hour-block"></div>
                         <div class="second-half-hour-block"></div>
                     </div>
                 </template>
             </div>
-        </div>
+        </template>
     </template>
-    <!-- When used by Weekly View -->
-    <template if:false={showHoursRuleColumn}>
-        <div class="day-column">
-            <template for:each={dayHoursBlocks} for:item="hourBlock">
-                <div key={hourBlock.hour} class={hourBlockClass}>
-                    <div class="first-half-hour-block"></div>
-                    <div class="second-half-hour-block"></div>
-                </div>
-            </template>
+    <template if:true={isLoading}>
+        <div class="spinner-container">
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
         </div>
     </template>
 </template>

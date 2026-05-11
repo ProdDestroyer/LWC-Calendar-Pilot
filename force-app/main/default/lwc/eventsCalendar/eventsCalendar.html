@@ -1,69 +1,67 @@
 <template>
 
     <div class="sf-card">
-        <template if:false={isLoading}>
-            <!-- Top Panel -->
-            <div class="top-panel">
-                <div class="info-panel">
-                    <h4 class="titleYear">{selectedYear}</h4>
-                    <h4 class="titleDate">{dateText}</h4>
+        <!-- Top Panel -->
+        <div class="top-panel">
+            <div class="info-panel">
+                <h4 class="titleYear">{selectedYear}</h4>
+                <h4 class="titleDate">{dateText}</h4>
+            </div>
+            <div class="legend-panel">
+                <div class="legend-item">
+                    <div class="circle green"></div><span>Health</span>
                 </div>
-                <div class="legend-panel">
-                    <div class="legend-item">
-                        <div class="circle green"></div><span>Health</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="circle orange"></div><span>Social</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="circle red"></div><span>Work</span>
-                    </div>
+                <div class="legend-item">
+                    <div class="circle orange"></div><span>Social</span>
                 </div>
-                <div class="navigation-panel">
-                    <div class="view-type">
-                        <div class="view-type-label">View:</div>
-                        <lightning-combobox name="viewType" variant="label-hidden" value={selectedViewType}
-                            options={viewTypeOptions} onchange={handleViewTypeOptionsChange} class="combobox">
-                        </lightning-combobox>
-                    </div>
-                    <div class="navigation-buttons">
-                        <lightning-button-icon icon-name="utility:refresh" variant="border-filled"
-                            alternative-text="Refresh" size="large" style="margin-right: 0.2vw;">
-                        </lightning-button-icon>
-                        <lightning-button-group>
-                            <lightning-button-icon 
-                            size="large"
-                            icon-name="utility:chevronleft"
-                            variant="border-filled"
-                            alternative-text="Delete"
-                            onclick={handlePreviousClicked}>
-                            </lightning-button-icon>
-                            <lightning-button-icon 
-                            size="large" 
-                            icon-name="utility:chevronright"
-                            variant="border-filled"
-                            alternative-text="Settings"
-                            onclick={handleNextClicked}>
-                        </lightning-button-icon>
-                        </lightning-button-group>
-                        <button class="slds-button slds-button_neutral today-button" onclick={handleTodayClick}>
-                            Today
-                        </button>
-                    </div>
+                <div class="legend-item">
+                    <div class="circle red"></div><span>Work</span>
                 </div>
             </div>
-            <!-- Views Panel -->
-            <div class="view-panel">
-                <template if:true={isMonthlyViewSelected}>
-                    <c-monthly-view-calendar pivot-date={pivotDate}></c-monthly-view-calendar>
-                </template>
-                <template if:true={isDailyViewSelected}>
-                    <c-daily-view-calendar pivot-date={pivotDate} show-hours-rule-column="true"></c-daily-view-calendar>
-                </template>
-                <template if:true={isWeeklyViewSelected}>
-                    <c-weekly-view-calendar pivot-date={pivotDate}></c-weekly-view-calendar>
-                </template>
+            <div class="navigation-panel">
+                <div class="view-type">
+                    <div class="view-type-label">View:</div>
+                    <lightning-combobox name="viewType" variant="label-hidden" value={selectedViewType}
+                        options={viewTypeOptions} onchange={handleViewTypeOptionsChange} class="combobox">
+                    </lightning-combobox>
+                </div>
+                <div class="navigation-buttons">
+                    <lightning-button-icon icon-name="utility:refresh" variant="border-filled"
+                        alternative-text="Refresh" size="large" style="margin-right: 0.2vw;">
+                    </lightning-button-icon>
+                    <lightning-button-group>
+                        <lightning-button-icon 
+                        size="large"
+                        icon-name="utility:chevronleft"
+                        variant="border-filled"
+                        alternative-text="Delete"
+                        onclick={handlePreviousClicked}>
+                        </lightning-button-icon>
+                        <lightning-button-icon 
+                        size="large" 
+                        icon-name="utility:chevronright"
+                        variant="border-filled"
+                        alternative-text="Settings"
+                        onclick={handleNextClicked}>
+                    </lightning-button-icon>
+                    </lightning-button-group>
+                    <button class="slds-button slds-button_neutral today-button" onclick={handleTodayClick}>
+                        Today
+                    </button>
+                </div>
             </div>
-        </template>
+        </div>
+        <!-- Views Panel -->
+        <div class="view-panel">
+            <template if:true={isMonthlyViewSelected}>
+                <c-monthly-view-calendar pivot-date={pivotDate}></c-monthly-view-calendar>
+            </template>
+            <template if:true={isDailyViewSelected}>
+                <c-daily-view-calendar pivot-date={pivotDate} is-weekly-view="true"></c-daily-view-calendar>
+            </template>
+            <template if:true={isWeeklyViewSelected}>
+                <c-weekly-view-calendar pivot-date={pivotDate}></c-weekly-view-calendar>
+            </template>
+        </div>
     </div>
 </template>

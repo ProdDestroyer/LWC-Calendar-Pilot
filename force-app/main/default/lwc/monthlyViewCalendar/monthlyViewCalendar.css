@@ -1,17 +1,9 @@
 .monthly-view-panel {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-}
-
-.date-tile {
-    height: 140px;
-    text-align: end;
+    width: 100%;
+    max-width: 100%;
     border: 1px solid black;
-    justify-content: end;
-}
-
-.grayed-out {
-    background-color: rgb(197, 192, 192);
 }
 
 .day-name-cell {
@@ -23,6 +15,7 @@
     overflow: hidden;
     white-space: nowrap;
     position: sticky;
+    z-index: 20;
     top: 0;
 }
 
@@ -30,7 +23,18 @@
     background-color: aliceblue;
 }
 
-h4 {
-    font-size: clamp(10px, 2vw, 18px);
-    margin-right: 0.2vw;
+.spinner-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* remove gray overlay */
+.slds-spinner_container {
+    background: transparent !important;
+}
+
+c-month-tile-calendar {
+    min-width: 0;
 }

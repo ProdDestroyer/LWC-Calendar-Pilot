@@ -3,16 +3,15 @@ import { WEEK_DAYS_NAMES, MONTHS_NAMES } from 'c/utils';
 
 export default class EventsCalendar extends LightningElement {
 
-    selectedViewType = 'weekly';
+    selectedViewType = 'monthly';
     pivotDate;
-    isLoading = true;
 
     //================================================= HANDLERS =================================================
 
     connectedCallback() {
         this.pivotDate = this.handlePivotDateReset(new Date());
-        this.isLoading = false;
     }
+
     handleViewTypeOptionsChange(event) {
         this.selectedViewType = event.target.value;
         this.pivotDate = this.handlePivotDateReset(this.pivotDate);
