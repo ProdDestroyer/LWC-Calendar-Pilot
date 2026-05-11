@@ -29,9 +29,9 @@
                              onmouseenter={handleCalendarEventHover}
                              onmouseleave={handleMouseLeave}
                              data-id={calendarEvent.id}>
-                                <h2 style="font-size: clamp(14px, 3vw, 25px)">{calendarEvent.title}</h2>
-                                <h4 style="font-size: clamp(14px, 2vw, 25px)">{calendarEvent.startTimeString}</h4>
-                                <h4 style="font-size: clamp(14px, 2vw, 25px)">{calendarEvent.endTimeString}</h4>
+                                <h2><span>Title: </span>{calendarEvent.title}</h2>
+                                <h4><span>Start Time: </span>{calendarEvent.startTimeString}</h4>
+                                <h4><span>End Time: </span>{calendarEvent.endTimeString}</h4>
                             </div>
                         </template>
                     </template>
