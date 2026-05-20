@@ -8,7 +8,7 @@ export const BUILD_DAY_HOURS_BLOCKS = () => {
     for (let i = 0; i < 24; i++) {
         const suffix = (i < 12) ? 'am' : 'pm';
         const formattedHour = (i + (Math.trunc(factor * i))) % 13;
-        dailyViewHourBlocks.push({ hour: i, hourString: `${((i < 10) ? '0' : '') + formattedHour}:00${suffix}` });
+        dailyViewHourBlocks.push({ hour: i, hourString: `${((formattedHour < 10) ? '0' : '') + formattedHour}:00${suffix}` });
     }
     return dailyViewHourBlocks;
 }

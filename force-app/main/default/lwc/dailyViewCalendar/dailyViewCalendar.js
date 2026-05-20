@@ -7,7 +7,9 @@ export default class DailyViewCalendar extends LightningElement {
     //data
     @api isWeeklyView;
     @api isToday;
-    @api calendarEvents = [];
+    @api userTimeZone;
+    @api calendarEventsPayload;
+    calendarEvents = [];
     calendarEventsMap = {};
     _pivotDate;
     dayHoursBlocks = [];
@@ -35,28 +37,41 @@ export default class DailyViewCalendar extends LightningElement {
     }
 
     async requestCalendarEvents() {
-        const { calendarEventsWrapper: { calendarEvents, timeZone }, errorMessage, isError } = await getCalendarEvents({
-            startDate: this.pivotDate,
-            endDate: this.pivotDate,
-        });
+        const { payload, errorMessage, isError } =  (!this.calendarEventsPayload) ? await getCalendarEvents({
+            startDate: {
+                year: this.pivotDate.getFullYear(),
+                month: this.pivotDate.getMonth() + 1,
+                day: this.pivotDate.getDate()
+            },
+            endDate: {
+                year: this.pivotDate.getFullYear(),
+                month: this.pivotDate.getMonth() + 1,
+                day: this.pivotDate.getDate()
+            },
+        }) : this.calendarEventsPayload;
         if (!isError) {
-            calendarEvents.forEach(calendarEvent => {
-                const startTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.Start_Time__c), timeZone);
-                const endTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.End_Time__c), timeZone);
-                const eventType = calendarEvent.Type__c;
-
-                this.calendarEvents.push({
-                    startTime,
-                    endTime,
-                    title: calendarEvent.Title__c,
-                    type: eventType,
-                    id: calendarEvent.Id,
-                });
-            });
+            this.processCalendarEvents(payload);
         } else {
             console.error('error ', errorMessage);
         }
         this.isLoading = false;
+    }
+
+    processCalendarEvents(payload) {
+        const calendarEvents = JSON.parse(payload);
+        calendarEvents.forEach(calendarEvent => {
+            const startTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.Start_Time__c), this.userTimeZone);
+            const endTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.End_Time__c), this.userTimeZone);
+            const eventType = calendarEvent.Type__c;
+
+            this.calendarEvents.push({
+                startTime,
+                endTime,
+                title: calendarEvent.Title__c,
+                type: eventType,
+                id: calendarEvent.Id,
+            });
+        });
     }
 
     renderedCallback() {
@@ -108,7 +123,7 @@ export default class DailyViewCalendar extends LightningElement {
         event.target.style.height = (autoHeight < height) ? `${height}px` : 'auto';
         event.target.style.zIndex = '60';
     }
-    
+
     handleMouseLeave(event) {
         event.target.style.height = `${this.calendarEventsMap[event.target.dataset.id].height}px`;
         event.target.style.zIndex = 'auto';

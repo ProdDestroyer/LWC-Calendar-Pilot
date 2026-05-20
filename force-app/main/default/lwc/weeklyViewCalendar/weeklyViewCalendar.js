@@ -3,13 +3,16 @@ import {WEEK_DAYS_NAMES, BUILD_DAY_HOURS_BLOCKS, ARE_DATES_EQUAL} from 'c/utils'
 
 export default class WeeklyViewCalendar extends LightningElement {
 
+    @api userTimeZone;
     _pivotDate;
     dayHoursBlocks = [];
     weekDays = [];
+    isLoading = true;
 
     connectedCallback() {
         this.dayHoursBlocks = BUILD_DAY_HOURS_BLOCKS();
         this.buildWeekDays();
+        this.isLoading = false;
     }
 
     buildWeekDays() {
@@ -22,6 +25,7 @@ export default class WeeklyViewCalendar extends LightningElement {
                 dateNumber: currentLoopDate.getDate(), 
                 dayName: WEEK_DAYS_NAMES[currentLoopDate.getDay()],
                 isToday: (ARE_DATES_EQUAL(currentLoopDate, new Date())),
+                calendarsPayload: {payload: null, errorMessage: 'testing phase', isError: true},
             });
         }
         this.weekDays = currentWeekDays;

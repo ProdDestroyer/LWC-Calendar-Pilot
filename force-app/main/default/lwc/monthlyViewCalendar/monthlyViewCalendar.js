@@ -6,6 +6,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class MonthlyViewCalendar extends LightningElement {
 
     firstTimeConnected = true;
+    @api userTimeZone;
     _pivotDate;
     lastRequestIndex = 0;
     currentMonthTiles = [];
@@ -31,23 +32,28 @@ export default class MonthlyViewCalendar extends LightningElement {
     async retrieveCalendarEvents() {
         const lastRequestIndex = this.lastRequestIndex;
         const { firstDayOfArray, lastDayOfArray } = this.buildMonthBaseData();
-        const { calendarEventsWrapper: { calendarEvents, timeZone }, errorMessage, isError } = await getCalendarEvents({
-            startDate: firstDayOfArray,
-            endDate: lastDayOfArray,
+        const { payload, errorMessage, isError } = await getCalendarEvents({
+            startDate: { year: firstDayOfArray.getFullYear(),
+                month: firstDayOfArray.getMonth() + 1,
+                day: firstDayOfArray.getDate() },
+            endDate: { year: lastDayOfArray.getFullYear(),
+                month: lastDayOfArray.getMonth() + 1,
+                day: lastDayOfArray.getDate() },
         });
 
-        if(this.lastRequestIndex != lastRequestIndex) return;
-
+        if (this.lastRequestIndex != lastRequestIndex) return;
+        
         if (isError) {
             showToast('Error', errorMessage, 'error');
         } else {
+            const calendarEvents = JSON.parse(payload);
 
             this.calendarEvents = calendarEvents;
             this.calendarEventsMap = {};
 
             calendarEvents.forEach(calendarEvent => {
-                const startTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.Start_Time__c), timeZone);
-                const endTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.End_Time__c), timeZone);
+                const startTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.Start_Time__c), this.userTimeZone);
+                const endTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.End_Time__c), this.userTimeZone);
                 const key = `${startTime.month}-${startTime.day}`;
                 const eventType = calendarEvent.Type__c;
 
