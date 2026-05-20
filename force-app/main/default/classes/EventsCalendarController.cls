@@ -1,11 +1,25 @@
 public with sharing class EventsCalendarController {
     
     @AuraEnabled(cacheable = true)
-    public static ResponseWrapper getCalendarEvents(Date startDate, Date endDate) {
+    public static ResponseWrapper getCalendarEvents(DateWrapper startDate, DateWrapper endDate) {
         
         try{
-            Datetime startDT = Datetime.newInstance(startDate, Time.newInstance(0, 0, 0, 0));
-            Datetime endDT = Datetime.newInstance(endDate, Time.newInstance(23, 59, 59, 999));
+            System.debug(startDate);
+            System.debug(endDate);
+            Datetime startDT = Datetime.newInstance(
+                startDate.year,
+                startDate.month,
+                startDate.day,
+                0,0,0
+            );
+            Datetime endDT = Datetime.newInstance(
+                endDate.year,
+                endDate.month,
+                endDate.day,
+                23, 59, 59
+            );
+            System.debug(startDt);
+            System.debug(endDt);
 
             List<Calendar_Event__c> calendarEvents = [
                 SELECT 
@@ -20,36 +34,40 @@ public with sharing class EventsCalendarController {
                 ORDER BY Start_Time__c ASC
             ];
 
-            CalendarEventsWrapper calendarEventsWrapper = new CalendarEventsWrapper(calendarEvents);
-            return new ResponseWrapper(calendarEventsWrapper, null, false);
+            return new ResponseWrapper(JSON.serialize(calendarEvents), null, false);
         } catch (Exception e) {
             return new ResponseWrapper(null, e.getMessage() + '\n' + e.getLineNumber(), true);
         }
     }
-    
-    public class CalendarEventsWrapper {
-        @AuraEnabled public List<Calendar_Event__c> calendarEvents {get;set;}
-        @AuraEnabled public String timeZone {get;set;}
 
-        public CalendarEventsWrapper(List<Calendar_Event__c> calendarEvents) {
-            this.calendarEvents = calendarEvents;
-            this.timeZone = UserInfo.getTimeZone().getID();
+    @AuraEnabled
+    public static ResponseWrapper getUserTimeZone(){
+        try {
+            return new ResponseWrapper(JSON.serialize(UserInfo.getTimeZone().getID()), null, false);
+        } catch (Exception e) {
+            return new ResponseWrapper(null, e.getMessage() + '\n' + e.getLineNumber(), true);
         }
-        
-    }
+    }   
 
     public class ResponseWrapper {
-        @AuraEnabled public CalendarEventsWrapper calendarEventsWrapper {get;set;}
+        @AuraEnabled public String payload {get;set;}
         @AuraEnabled public String errorMessage {get;set;}
         @AuraEnabled public Boolean isError {get;set;}
 
         public ResponseWrapper(
-            CalendarEventsWrapper calendarEventsWrapper,
+            String payload,
             String errorMessage,
-            Boolean isError) {
-                this.calendarEventsWrapper = calendarEventsWrapper;
+            Boolean isError
+        ) {
+                this.payload = payload;
                 this.errorMessage = errorMessage;
                 this.isError = isError;
         }
+    }
+
+    public class DateWrapper {
+        @AuraEnabled public Integer year {get; set;}
+        @AuraEnabled public Integer month {get; set;}
+        @AuraEnabled public Integer day {get; set;}
     }
 }

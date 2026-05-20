@@ -1,15 +1,30 @@
 import { LightningElement } from 'lwc';
 import { WEEK_DAYS_NAMES, MONTHS_NAMES } from 'c/utils';
+import getUserTimeZone from '@salesforce/apex/EventsCalendarController.getUserTimeZone';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class EventsCalendar extends LightningElement {
 
     selectedViewType = 'monthly';
     pivotDate;
+    isLoading = true;
+    userTimeZone;
 
     //================================================= HANDLERS =================================================
 
     connectedCallback() {
         this.pivotDate = this.handlePivotDateReset(new Date());
+        this.requestUserTimeZone();
+    }
+
+    async requestUserTimeZone() {
+        const {payload, errorMessage, isError} = await getUserTimeZone();
+        if (isError) {
+            showToast('Error', errorMessage, 'error');
+        } else { 
+            this.userTimeZone = JSON.parse(payload);
+        }
+        this.isLoading = false;
     }
 
     handleViewTypeOptionsChange(event) {
@@ -80,6 +95,16 @@ export default class EventsCalendar extends LightningElement {
         let text = `${(WEEK_DAYS_NAMES[startDate.getDay()]).substring(0, 3)} ${startDate.getDate()} of ${(MONTHS_NAMES[startDate.getMonth()]).substring(0, 3)}`;
         text += ` - ${(WEEK_DAYS_NAMES[endDate.getDay()]).substring(0, 3)} ${endDate.getDate()} of ${(MONTHS_NAMES[endDate.getMonth()]).substring(0, 3)}`;
         return text;
+    }
+
+    showToast(title, message, variant) {
+        const evt = new ShowToastEvent({
+            title,
+            message,
+            variant,
+            mode: 'dismissable' //could try sticky
+        });
+        this.dispatchEvent(evt);
     }
 
     //================================================= GETTERS =================================================
