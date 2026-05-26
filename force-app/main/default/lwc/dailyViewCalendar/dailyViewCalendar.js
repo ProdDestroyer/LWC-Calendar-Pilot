@@ -37,7 +37,7 @@ export default class DailyViewCalendar extends LightningElement {
     }
 
     async requestCalendarEvents() {
-        const { payload, errorMessage, isError } =  (!this.calendarEventsPayload) ? await getCalendarEvents({
+        const { payload, errorMessage, isError } = (!this.calendarEventsPayload) ? await getCalendarEvents({
             startDate: {
                 year: this.pivotDate.getFullYear(),
                 month: this.pivotDate.getMonth() + 1,
@@ -91,9 +91,9 @@ export default class DailyViewCalendar extends LightningElement {
                 const backgroundColor = (type == 'Health') ? 'rgb(97, 209, 97)' : (type == 'Social') ? 'rgb(248, 194, 94)' : 'rgb(239, 95, 95)';
 
                 let style = `
-                position: absolute; top: ${top}px;
+                position: absolute; 
+                top: ${top}px;
                 height:${height}px;
-                width: 100%;
                 border-left: 5px solid;
                 border-radius: 3px;
                 border-color: ${borderColor};
@@ -106,12 +106,65 @@ export default class DailyViewCalendar extends LightningElement {
                     startTimeString: `${startTime.hour}:${startTime.minute}:${startTime.second}`,
                     endTimeString: `${endTime.hour}:${endTime.minute}:${endTime.second}`,
                     height,
+                    startTimeInMinutes,
+                    endTimeInMinutes,
                 };
 
                 this.calendarEventsMap[calendarevent.id] = transformedCalendarEvent;
 
                 return transformedCalendarEvent;
             });
+
+            this.calendarEvents.sort((a, b) => new Date(a.startTimeInMinutes) - new Date(b.startTimeInMinutes));
+
+            console.log((JSON.stringify(this.calendarEvents)));
+
+            const calendarEventsMasterList = [...this.calendarEvents];
+            const columnsList = [];
+
+            let columnIndex = 0;
+            while (calendarEventsMasterList.length > 0) {
+
+                calendarEventsMasterList[0].columnIndex = columnIndex;
+                const currentColumn = [calendarEventsMasterList[0]];
+                let timeRule = calendarEventsMasterList[0].endTimeInMinutes;
+                let index = 1;
+
+                while (index < calendarEventsMasterList.length) {
+
+                    const currentCalendarEvent = calendarEventsMasterList[index];
+                    if (currentCalendarEvent.startTimeInMinutes >= timeRule) {
+                        console.log('are you even going here');
+                        currentCalendarEvent.columnIndex = columnIndex;
+                        currentColumn.push(currentCalendarEvent);
+                        timeRule = currentCalendarEvent.endTimeInMinutes;
+                        calendarEventsMasterList.splice(index, 1);
+                        console.log('currentCalendarEvent 1 ', JSON.stringify(currentCalendarEvent));
+                    }
+                    else {
+                        index += 1;
+                    }
+                    // console.log('currentCalendarEvent ', JSON.stringify(currentCalendarEvent));
+                }
+                calendarEventsMasterList.shift();
+                columnsList.push(currentColumn);
+                columnIndex += 1;
+            }
+            // console.log(JSON.stringify(columnsList));
+            console.log(JSON.stringify(this.calendarEvents));
+            let index = 0;
+            const eventCalendarWidth = dayColumn.getBoundingClientRect().width / columnsList.length;
+            while (index < this.calendarEvents.length) {
+                const currentCalendarEvent = this.calendarEvents[index];
+                console.log('columnIndex ', currentCalendarEvent['columnIndex']);
+                currentCalendarEvent['columnWidth'] = eventCalendarWidth;
+                currentCalendarEvent['style'] = `${currentCalendarEvent['style']} 
+                                                left: ${(currentCalendarEvent['columnIndex'] * eventCalendarWidth)}px;
+                                                width: ${eventCalendarWidth}px;`;
+                index += 1;
+            }
+
+            this.calendarEvents = [...this.calendarEvents];
             this.areCalendarEventsReady = true;
         }
     }
