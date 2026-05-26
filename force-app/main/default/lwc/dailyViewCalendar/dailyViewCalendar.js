@@ -117,7 +117,6 @@ export default class DailyViewCalendar extends LightningElement {
 
             this.calendarEvents.sort((a, b) => new Date(a.startTimeInMinutes) - new Date(b.startTimeInMinutes));
 
-            console.log((JSON.stringify(this.calendarEvents)));
 
             const calendarEventsMasterList = [...this.calendarEvents];
             const columnsList = [];
@@ -134,29 +133,23 @@ export default class DailyViewCalendar extends LightningElement {
 
                     const currentCalendarEvent = calendarEventsMasterList[index];
                     if (currentCalendarEvent.startTimeInMinutes >= timeRule) {
-                        console.log('are you even going here');
                         currentCalendarEvent.columnIndex = columnIndex;
                         currentColumn.push(currentCalendarEvent);
                         timeRule = currentCalendarEvent.endTimeInMinutes;
                         calendarEventsMasterList.splice(index, 1);
-                        console.log('currentCalendarEvent 1 ', JSON.stringify(currentCalendarEvent));
                     }
                     else {
                         index += 1;
                     }
-                    // console.log('currentCalendarEvent ', JSON.stringify(currentCalendarEvent));
                 }
                 calendarEventsMasterList.shift();
                 columnsList.push(currentColumn);
                 columnIndex += 1;
             }
-            // console.log(JSON.stringify(columnsList));
-            console.log(JSON.stringify(this.calendarEvents));
             let index = 0;
             const eventCalendarWidth = dayColumn.getBoundingClientRect().width / columnsList.length;
             while (index < this.calendarEvents.length) {
                 const currentCalendarEvent = this.calendarEvents[index];
-                console.log('columnIndex ', currentCalendarEvent['columnIndex']);
                 currentCalendarEvent['columnWidth'] = eventCalendarWidth;
                 currentCalendarEvent['style'] = `${currentCalendarEvent['style']} 
                                                 left: ${(currentCalendarEvent['columnIndex'] * eventCalendarWidth)}px;
