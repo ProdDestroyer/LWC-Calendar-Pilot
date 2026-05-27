@@ -33,25 +33,30 @@ export default class MonthlyViewCalendar extends LightningElement {
         const lastRequestIndex = this.lastRequestIndex;
         const { firstDayOfArray, lastDayOfArray } = this.buildMonthBaseData();
         const { payload, errorMessage, isError } = await getCalendarEvents({
-            startDate: { year: firstDayOfArray.getFullYear(),
+            startDate: {
+                year: firstDayOfArray.getFullYear(),
                 month: firstDayOfArray.getMonth() + 1,
-                day: firstDayOfArray.getDate() },
-            endDate: { year: lastDayOfArray.getFullYear(),
+                day: firstDayOfArray.getDate()
+            },
+            endDate: {
+                year: lastDayOfArray.getFullYear(),
                 month: lastDayOfArray.getMonth() + 1,
-                day: lastDayOfArray.getDate() },
+                day: lastDayOfArray.getDate()
+            },
         });
 
         if (this.lastRequestIndex != lastRequestIndex) return;
-        
+
         if (isError) {
             showToast('Error', errorMessage, 'error');
         } else {
-            const calendarEvents = JSON.parse(payload);
+
+            const calendarEvents = JSON.parse(payload).sort((a, b) => new Date(a.Start_Time__c) - new Date(b.Start_Time__c));
 
             this.calendarEvents = calendarEvents;
             this.calendarEventsMap = {};
 
-            calendarEvents.forEach(calendarEvent => {
+            calendarEvents.forEach((calendarEvent) => {
                 const startTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.Start_Time__c), this.userTimeZone);
                 const endTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.End_Time__c), this.userTimeZone);
                 const key = `${startTime.month}-${startTime.day}`;
@@ -84,8 +89,10 @@ export default class MonthlyViewCalendar extends LightningElement {
 
                 targetMonthTiles.push({
                     date: currentDate,
+                    key,
                     dateNumber: currentDate.getDate(),
                     dateString: currentDate.toDateString(),
+                    monthNumber: currentDate.getMonth(),
                     className: !grayedOut ? (ARE_DATES_EQUAL(currentDate, new Date())) ? 'date-tile today-background' : 'date-tile' : 'date-tile grayed-out',
                     calendarEvents: tileCalendarEvents,
                     truncateEvents: tileCalendarEvents.length > 3,
@@ -122,6 +129,16 @@ export default class MonthlyViewCalendar extends LightningElement {
             futureTilesAmount,
             totalTilesAmount,
         };
+    }
+
+    jumpToDaily(event) {
+        const key = event.currentTarget.dataset.id;
+        const date = event.currentTarget.dataset.date;
+        const clickedDayCalendarEvents = this.calendarEventsMap[key];
+        
+        this.dispatchEvent(new CustomEvent('monthtileclick',
+            { detail: {clickedDayCalendarEvents, date} })
+        );
     }
 
     showToast(title, message, variant) {

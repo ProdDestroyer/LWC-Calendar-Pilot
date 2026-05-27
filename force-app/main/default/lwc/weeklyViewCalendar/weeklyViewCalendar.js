@@ -11,6 +11,11 @@ export default class WeeklyViewCalendar extends LightningElement {
 
     connectedCallback() {
         this.dayHoursBlocks = BUILD_DAY_HOURS_BLOCKS();
+        this.reloadData();
+    }
+
+    reloadData() {
+        this.isLoading = true;
         this.buildWeekDays();
         this.isLoading = false;
     }
@@ -40,7 +45,7 @@ export default class WeeklyViewCalendar extends LightningElement {
 
     set pivotDate(newPivotDate) {
         this._pivotDate = newPivotDate;
-        this.buildWeekDays();
+        this.reloadData();
     }
 
     get weekDaysNames() {

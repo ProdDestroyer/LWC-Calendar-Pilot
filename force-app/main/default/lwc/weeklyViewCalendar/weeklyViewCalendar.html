@@ -17,7 +17,7 @@
                 </template>
             </div>
             <template for:each={weekDays} for:item="weekDay">
-                <c-daily-view-calendar key={weekDay.dateString} pivot-date={pivotDate} is-today={weekDay.isToday} calendar-events-payload={weekDay.calendarsPayload}>
+                <c-daily-view-calendar key={weekDay.dateString} pivot-date={pivotDate} is-today={weekDay.isToday}>
                 </c-daily-view-calendar>
             </template>
         </template>

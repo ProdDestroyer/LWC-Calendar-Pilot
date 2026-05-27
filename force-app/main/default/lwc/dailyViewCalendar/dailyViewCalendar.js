@@ -25,7 +25,7 @@ export default class DailyViewCalendar extends LightningElement {
             this.firstTimeConnected = false;
         }
         this.dayHoursBlocks = BUILD_DAY_HOURS_BLOCKS();
-        this.requestCalendarEvents();
+        this.reloadData();
     }
 
     async reloadData() {
@@ -33,28 +33,33 @@ export default class DailyViewCalendar extends LightningElement {
         this.areCalendarEventsReady = false;
         this.calendarEvents = [];
         this.calendarEventsMap = [];
-        this.requestCalendarEvents();
+        await this.requestCalendarEvents();
+        this.isLoading = false;
     }
 
     async requestCalendarEvents() {
-        const { payload, errorMessage, isError } = (!this.calendarEventsPayload) ? await getCalendarEvents({
-            startDate: {
-                year: this.pivotDate.getFullYear(),
-                month: this.pivotDate.getMonth() + 1,
-                day: this.pivotDate.getDate()
-            },
-            endDate: {
-                year: this.pivotDate.getFullYear(),
-                month: this.pivotDate.getMonth() + 1,
-                day: this.pivotDate.getDate()
-            },
-        }) : this.calendarEventsPayload;
-        if (!isError) {
-            this.processCalendarEvents(payload);
+        if (!this.calendarEventsPayload) {
+            const { payload, errorMessage, isError } = await getCalendarEvents({
+                startDate: {
+                    year: this.pivotDate.getFullYear(),
+                    month: this.pivotDate.getMonth() + 1,
+                    day: this.pivotDate.getDate()
+                },
+                endDate: {
+                    year: this.pivotDate.getFullYear(),
+                    month: this.pivotDate.getMonth() + 1,
+                    day: this.pivotDate.getDate()
+                },
+            });
+            if (!isError) {
+                this.processCalendarEvents(payload);
+            } else {
+                console.error('error ', errorMessage);
+            }
         } else {
-            console.error('error ', errorMessage);
+            this.calendarEvents = this.calendarEventsPayload;
+            this.calendarEventsPayload = null;
         }
-        this.isLoading = false;
     }
 
     processCalendarEvents(payload) {
@@ -79,6 +84,7 @@ export default class DailyViewCalendar extends LightningElement {
             const dayColumn = this.template.querySelector('.day-column');
             this.calculateVerticalAlignments(dayColumn);
             this.calculateHorizontalAlignments(dayColumn);
+            this.areCalendarEventsReady = true;
         }
     }
 
@@ -160,12 +166,10 @@ export default class DailyViewCalendar extends LightningElement {
         })
 
         this.calendarEvents = this.calendarEvents.map(calendarEvent => {
-            calendarEvent.calendarEventWidth = (calendarEvent.calendarEventWidth/dayColumnWidth) * 100;
+            calendarEvent.calendarEventWidth = (calendarEvent.calendarEventWidth / dayColumnWidth) * 100;
             const style = `${calendarEvent['style']} width: ${calendarEvent.calendarEventWidth}%`;
             return { ...calendarEvent, style };
         })
-
-        this.areCalendarEventsReady = true;
     }
 
     calculateVerticalAlignments(dayColumn) {

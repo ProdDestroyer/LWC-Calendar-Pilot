@@ -4,8 +4,6 @@ public with sharing class EventsCalendarController {
     public static ResponseWrapper getCalendarEvents(DateWrapper startDate, DateWrapper endDate) {
         
         try{
-            System.debug(startDate);
-            System.debug(endDate);
             Datetime startDT = Datetime.newInstance(
                 startDate.year,
                 startDate.month,
@@ -18,8 +16,6 @@ public with sharing class EventsCalendarController {
                 endDate.day,
                 23, 59, 59
             );
-            System.debug(startDt);
-            System.debug(endDt);
 
             List<Calendar_Event__c> calendarEvents = [
                 SELECT 
@@ -29,8 +25,8 @@ public with sharing class EventsCalendarController {
                 End_Time__c,
                 Type__c
                 FROM Calendar_Event__c
-                WHERE Start_Time__c >= :startDT
-                AND End_Time__c <= : endDT
+                WHERE End_Time__c >= :startDT
+                AND Start_Time__c <= : endDT
                 ORDER BY Start_Time__c ASC
             ];
 

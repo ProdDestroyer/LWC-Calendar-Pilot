@@ -4,7 +4,6 @@ import { ARE_DATES_EQUAL} from 'c/utils';
 export default class MonthTileCalendar extends LightningElement {
     @api monthTileData;
 
-
     get isToday() {
         return  ARE_DATES_EQUAL(this.monthTileData.date, new Date());
     }

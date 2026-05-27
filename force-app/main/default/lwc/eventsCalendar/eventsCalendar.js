@@ -9,6 +9,7 @@ export default class EventsCalendar extends LightningElement {
     pivotDate;
     isLoading = true;
     userTimeZone;
+    calendarEventsPayload;
 
     //================================================= HANDLERS =================================================
 
@@ -18,10 +19,10 @@ export default class EventsCalendar extends LightningElement {
     }
 
     async requestUserTimeZone() {
-        const {payload, errorMessage, isError} = await getUserTimeZone();
+        const { payload, errorMessage, isError } = await getUserTimeZone();
         if (isError) {
             showToast('Error', errorMessage, 'error');
-        } else { 
+        } else {
             this.userTimeZone = JSON.parse(payload);
         }
         this.isLoading = false;
@@ -95,6 +96,13 @@ export default class EventsCalendar extends LightningElement {
         let text = `${(WEEK_DAYS_NAMES[startDate.getDay()]).substring(0, 3)} ${startDate.getDate()} of ${(MONTHS_NAMES[startDate.getMonth()]).substring(0, 3)}`;
         text += ` - ${(WEEK_DAYS_NAMES[endDate.getDay()]).substring(0, 3)} ${endDate.getDate()} of ${(MONTHS_NAMES[endDate.getMonth()]).substring(0, 3)}`;
         return text;
+    }
+
+    handleMonthTileClick({ detail }) {
+        this.calendarEventsPayload = detail.clickedDayCalendarEvents;
+        this.pivotDate = detail.date;
+        const fakeEvent = {target: {value: 'daily'}}
+        this.handleViewTypeOptionsChange(fakeEvent);
     }
 
     showToast(title, message, variant) {
