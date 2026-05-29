@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
-import { BUILD_CURRENT_USER_TIME, WEEK_DAYS_NAMES, ARE_DATES_EQUAL, PRINT_ERROR } from 'c/utils';
+import { BUILD_CURRENT_USER_TIME, WEEK_DAYS_NAMES, ARE_DATES_EQUAL, PRINT_ERROR, USER_TIME_TO_DATE_TIME, BUILD_TIME_DIRECTLY } from 'c/utils';
 import getCalendarEvents from '@salesforce/apex/EventsCalendarController.getCalendarEvents';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
@@ -59,18 +59,35 @@ export default class MonthlyViewCalendar extends LightningElement {
             calendarEvents.forEach((calendarEvent) => {
                 const startTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.Start_Time__c), this.userTimeZone);
                 const endTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.End_Time__c), this.userTimeZone);
-                const key = `${startTime.month}-${startTime.day}`;
                 const eventType = calendarEvent.Type__c;
 
-                this.calendarEventsMap[key] ??= [];
-                this.calendarEventsMap[key].push({
-                    startTime,
-                    endTime,
-                    title: calendarEvent.Title__c,
-                    type: eventType,
-                    class: (eventType == 'Health') ? 'calendar-event-box green' : (eventType == 'Social') ? 'calendar-event-box yellow' : 'calendar-event-box red',
-                    id: calendarEvent.Id,
-                });
+                
+                let currentStartTime = USER_TIME_TO_DATE_TIME(startTime);
+                const currentEndTime = USER_TIME_TO_DATE_TIME(endTime);
+                do {
+                    const assignableStartTime = BUILD_TIME_DIRECTLY(currentStartTime);
+                    const assignableEndTime = (ARE_DATES_EQUAL(currentStartTime, currentEndTime)) ? endTime :
+                    {assignableStartTime, hour: '23', minute: '59', second: '59'}
+                    const key = `${assignableStartTime.month}-${assignableStartTime.day}`;
+
+                    this.calendarEventsMap[key] ??= [];
+                    this.calendarEventsMap[key].push({
+                        startTime: assignableStartTime,
+                        endTime: assignableEndTime,
+                        title: calendarEvent.Title__c,
+                        type: eventType,
+                        class: (eventType == 'Health') ? 'calendar-event-box green' : (eventType == 'Social') ? 'calendar-event-box yellow' : 'calendar-event-box red',
+                        id: calendarEvent.Id,
+                        originalStartTime: startTime,
+                        originalEndTime: endTime,
+                    });
+
+                    currentStartTime = new Date(currentStartTime);
+                    currentStartTime.setDate(currentStartTime.getDate() + 1);
+                    currentStartTime.setHours(0);
+                    currentStartTime.setMinutes(0);
+                    currentStartTime.setSeconds(0);
+                } while (currentStartTime < currentEndTime);
             });
         }
     }
@@ -81,6 +98,7 @@ export default class MonthlyViewCalendar extends LightningElement {
         const targetMonthTiles = [];
         try {
             for (let i = 0; i < totalTilesAmount; i++) {
+                try{
                 const currentDate = new Date(firstDayOfArray);
                 currentDate.setDate(currentDate.getDate() + i);
                 const grayedOut = (i < firstDayOfMonthWeekIndex || i > pastAndCurrentMonthTilesAmount - 1);
@@ -97,6 +115,10 @@ export default class MonthlyViewCalendar extends LightningElement {
                     calendarEvents: tileCalendarEvents,
                     truncateEvents: tileCalendarEvents.length > 3,
                 });
+            } catch(err) {
+                throw new Error(`${err}`);
+                
+            }
             }
         } catch (error) {
             PRINT_ERROR(error);
@@ -135,9 +157,9 @@ export default class MonthlyViewCalendar extends LightningElement {
         const key = event.currentTarget.dataset.id;
         const date = event.currentTarget.dataset.date;
         const clickedDayCalendarEvents = this.calendarEventsMap[key];
-        
+
         this.dispatchEvent(new CustomEvent('monthtileclick',
-            { detail: {clickedDayCalendarEvents, date} })
+            { detail: { clickedDayCalendarEvents, date } })
         );
     }
 

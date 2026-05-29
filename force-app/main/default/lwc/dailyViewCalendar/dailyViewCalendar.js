@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
-import { BUILD_CURRENT_USER_TIME, WEEK_DAYS_NAMES, BUILD_DAY_HOURS_BLOCKS, DAY_MINUTES_AMOUNT } from 'c/utils';
+import { BUILD_CURRENT_USER_TIME, WEEK_DAYS_NAMES, BUILD_DAY_HOURS_BLOCKS, DAY_MINUTES_AMOUNT, USER_TIME_TO_DATE_TIME } from 'c/utils';
 import getCalendarEvents from '@salesforce/apex/EventsCalendarController.getCalendarEvents'
 
 export default class DailyViewCalendar extends LightningElement {
@@ -72,6 +72,8 @@ export default class DailyViewCalendar extends LightningElement {
             this.calendarEvents.push({
                 startTime,
                 endTime,
+                originalStartTime: startTime,
+                originalEndTime: endTime,
                 title: calendarEvent.Title__c,
                 type: eventType,
                 id: calendarEvent.Id,
@@ -97,7 +99,6 @@ export default class DailyViewCalendar extends LightningElement {
 
         let columnIndex = 0;
         while (calendarEventsMasterList.length > 0) {
-
             calendarEventsMasterList[0].columnIndex = columnIndex;
             const currentColumn = [calendarEventsMasterList[0]];
             let timeRule = calendarEventsMasterList[0].endTimeInMinutes;
@@ -175,9 +176,24 @@ export default class DailyViewCalendar extends LightningElement {
     calculateVerticalAlignments(dayColumn) {
         const minuteHeightInPX = dayColumn.getBoundingClientRect().height / DAY_MINUTES_AMOUNT;
 
-        this.calendarEvents = this.calendarEvents.map(calendarevent => {
-            const { startTime, endTime, type } = calendarevent;
-            const startTimeInMinutes = (Number(startTime.hour) * 60) + Number(startTime.minute);
+        const pivotDate = this._pivotDate;
+        this.calendarEvents = this.calendarEvents.map(calendarEvent => {
+            const { startTime, originalStartTime, originalEndTime, endTime, type } = calendarEvent;
+
+            const startTimeCopy = {...startTime};
+            const tempPivotDate = new Date(pivotDate);
+
+            tempPivotDate.setHours(0);
+            tempPivotDate.setMinutes(0);
+            tempPivotDate.setSeconds(0);
+
+            if ((USER_TIME_TO_DATE_TIME(startTimeCopy) < tempPivotDate)) {
+                startTimeCopy.hour = '00';
+                startTimeCopy.minute = '00';
+                startTimeCopy.second = '00';
+            }
+
+            const startTimeInMinutes = (Number(startTimeCopy.hour) * 60) + Number(startTimeCopy.minute);
             const endTimeInMinutes = (Number(endTime.hour) * 60) + Number(endTime.minute);
             const minutesDuration = endTimeInMinutes - startTimeInMinutes;
             const top = startTimeInMinutes * minuteHeightInPX;
@@ -197,17 +213,17 @@ export default class DailyViewCalendar extends LightningElement {
                 `;
 
             const transformedCalendarEvent = {
-                ...calendarevent,
+                ...calendarEvent,
                 style,
-                startTimeString: `${startTime.hour}:${startTime.minute}:${startTime.second}`,
-                endTimeString: `${endTime.hour}:${endTime.minute}:${endTime.second}`,
+                startTimeString: `${originalStartTime.hour}:${originalStartTime.minute}:${originalStartTime.second} ${originalStartTime.weekday} ${originalStartTime.day}`,
+                endTimeString: `${originalEndTime.hour}:${originalEndTime.minute}:${originalEndTime.second} ${originalEndTime.weekday} ${originalEndTime.day}`,
                 height,
                 startTimeInMinutes,
                 endTimeInMinutes,
                 expand: true,
             };
 
-            this.calendarEventsMap[calendarevent.id] = transformedCalendarEvent;
+            this.calendarEventsMap[calendarEvent.id] = transformedCalendarEvent;
 
             return transformedCalendarEvent;
         });
