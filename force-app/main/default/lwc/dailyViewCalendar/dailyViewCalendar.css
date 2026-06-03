@@ -85,6 +85,7 @@ h5 {
     0 -2px 4px rgba(0, 0, 0, 0.1), /* top */
     0  2px 4px rgba(0, 0, 0, 0.1); /* bottom */
     overflow: hidden;
+    transition: transform 0.35s ease-in-out;
 }
 
 .calendar-event-box h2, h4 {

@@ -180,7 +180,7 @@ export default class DailyViewCalendar extends LightningElement {
         this.calendarEvents = this.calendarEvents.map(calendarEvent => {
             const { startTime, originalStartTime, originalEndTime, endTime, type } = calendarEvent;
 
-            const startTimeCopy = {...startTime};
+            const startTimeCopy = { ...startTime };
             const tempPivotDate = new Date(pivotDate);
 
             tempPivotDate.setHours(0);
@@ -230,15 +230,35 @@ export default class DailyViewCalendar extends LightningElement {
     }
 
     handleCalendarEventHover(event) {
-        const height = this.calendarEventsMap[event.target.dataset.id].height;
-        event.target.style.height = 'auto';
-        const autoHeight = event.target.getBoundingClientRect().height;
-        event.target.style.height = (autoHeight < height) ? `${height}px` : 'auto';
-        event.target.style.zIndex = '60';
+        const dayColumn = this.template.querySelector('.day-column');
+
+        if (dayColumn) {
+            const rect = dayColumn.getBoundingClientRect();
+
+            const height = this.calendarEventsMap[event.target.dataset.id].height;
+            event.target.style.height = 'auto';
+            const autoHeight = event.target.getBoundingClientRect().height;
+            const autoBottom = event.target.getBoundingClientRect().bottom;
+
+            if (autoBottom <= rect.bottom) {
+                event.target.style.height = (autoHeight < height) ? `${height}px` : 'auto';
+                event.target.style.zIndex = '60';
+            } else {
+                const topOffset = autoBottom - rect.bottom;
+                event.target.style.transform = `translateY(-${topOffset}px)`;
+                event.target.dataset.topOffset = topOffset;
+            }
+        }
     }
 
     handleMouseLeave(event) {
-        event.target.style.height = `${this.calendarEventsMap[event.target.dataset.id].height}px`;
+        const topOffset = Number(event.target.dataset.topOffset || 0);
+        if (topOffset <= 0) {
+            event.target.style.height = `${this.calendarEventsMap[event.target.dataset.id].height}px`;
+        } else {
+            event.target.style.transform = `translateY(0px)`;
+            event.target.dataset.topOffset = 0;
+        }
         event.target.style.zIndex = 'auto';
     }
 
