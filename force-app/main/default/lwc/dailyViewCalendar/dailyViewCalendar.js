@@ -90,9 +90,9 @@ export default class DailyViewCalendar extends LightningElement {
         }
     }
 
-    calculateHorizontalAlignments(dayColumn) {
+
+    createColumnsList() {
         this.calendarEvents.sort((a, b) => new Date(a.startTimeInMinutes) - new Date(b.startTimeInMinutes));
-        const dayColumnWidth = dayColumn.getBoundingClientRect().width;
 
         const calendarEventsMasterList = [...this.calendarEvents];
         const columnsList = [];
@@ -122,7 +122,11 @@ export default class DailyViewCalendar extends LightningElement {
             columnsList.push(currentColumn);
             columnIndex += 1;
         }
+        return columnsList;
+    }
 
+    calculateCalendarEventsStretching(columnsList, dayColumn) {
+        const dayColumnWidth = dayColumn.getBoundingClientRect().width;
         let index = 0;
         const calendarEventWidth = dayColumnWidth / columnsList.length;
 
@@ -171,6 +175,10 @@ export default class DailyViewCalendar extends LightningElement {
             const style = `${calendarEvent['style']} width: ${calendarEvent.calendarEventWidth}%`;
             return { ...calendarEvent, style };
         })
+    }
+
+    calculateHorizontalAlignments(dayColumn) {
+        this.calculateCalendarEventsStretching(this.createColumnsList(), dayColumn);
     }
 
     calculateVerticalAlignments(dayColumn) {
