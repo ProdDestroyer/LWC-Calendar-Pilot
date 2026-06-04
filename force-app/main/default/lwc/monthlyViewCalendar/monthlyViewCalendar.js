@@ -15,9 +15,7 @@ export default class MonthlyViewCalendar extends LightningElement {
     calendarEventsMap = {};
 
     async connectedCallback() {
-        if (this.firstTimeConnected) {
-            this.firstTimeConnected = false;
-        }
+        this.firstTimeConnected = false;
         await this.reloadData();
     }
 
@@ -61,13 +59,13 @@ export default class MonthlyViewCalendar extends LightningElement {
                 const endTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.End_Time__c), this.userTimeZone);
                 const eventType = calendarEvent.Type__c;
 
-                
+
                 let currentStartTime = USER_TIME_TO_DATE_TIME(startTime);
                 const currentEndTime = USER_TIME_TO_DATE_TIME(endTime);
                 do {
                     const assignableStartTime = BUILD_TIME_DIRECTLY(currentStartTime);
                     const assignableEndTime = (ARE_DATES_EQUAL(currentStartTime, currentEndTime)) ? endTime :
-                    {assignableStartTime, hour: '23', minute: '59', second: '59'}
+                        { assignableStartTime, hour: '23', minute: '59', second: '59' }
                     const key = `${assignableStartTime.month}-${assignableStartTime.day}`;
 
                     this.calendarEventsMap[key] ??= [];
@@ -98,27 +96,27 @@ export default class MonthlyViewCalendar extends LightningElement {
         const targetMonthTiles = [];
         try {
             for (let i = 0; i < totalTilesAmount; i++) {
-                try{
-                const currentDate = new Date(firstDayOfArray);
-                currentDate.setDate(currentDate.getDate() + i);
-                const grayedOut = (i < firstDayOfMonthWeekIndex || i > pastAndCurrentMonthTilesAmount - 1);
-                const key = `${((currentDate.getMonth() + 1 < 10) ? '0' : '') + (currentDate.getMonth() + 1)}-${((currentDate.getDate() < 10) ? '0' : '') + currentDate.getDate()}`;
-                const tileCalendarEvents = this.calendarEventsMap[key] || [];
+                try {
+                    const currentDate = new Date(firstDayOfArray);
+                    currentDate.setDate(currentDate.getDate() + i);
+                    const grayedOut = (i < firstDayOfMonthWeekIndex || i > pastAndCurrentMonthTilesAmount - 1);
+                    const key = `${((currentDate.getMonth() + 1 < 10) ? '0' : '') + (currentDate.getMonth() + 1)}-${((currentDate.getDate() < 10) ? '0' : '') + currentDate.getDate()}`;
+                    const tileCalendarEvents = this.calendarEventsMap[key] || [];
 
-                targetMonthTiles.push({
-                    date: currentDate,
-                    key,
-                    dateNumber: currentDate.getDate(),
-                    dateString: currentDate.toDateString(),
-                    monthNumber: currentDate.getMonth(),
-                    className: !grayedOut ? (ARE_DATES_EQUAL(currentDate, new Date())) ? 'date-tile today-background' : 'date-tile' : 'date-tile grayed-out',
-                    calendarEvents: tileCalendarEvents,
-                    truncateEvents: tileCalendarEvents.length > 3,
-                });
-            } catch(err) {
-                throw new Error(`${err}`);
-                
-            }
+                    targetMonthTiles.push({
+                        date: currentDate,
+                        key,
+                        dateNumber: currentDate.getDate(),
+                        dateString: currentDate.toDateString(),
+                        monthNumber: currentDate.getMonth(),
+                        className: !grayedOut ? (ARE_DATES_EQUAL(currentDate, new Date())) ? 'date-tile today-background' : 'date-tile' : 'date-tile grayed-out',
+                        calendarEvents: tileCalendarEvents,
+                        truncateEvents: tileCalendarEvents.length > 3,
+                    });
+                } catch (err) {
+                    throw new Error(`${err}`);
+
+                }
             }
         } catch (error) {
             PRINT_ERROR(error);

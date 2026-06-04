@@ -13,6 +13,7 @@ export default class DailyViewCalendar extends LightningElement {
     calendarEventsMap = {};
     _pivotDate;
     dayHoursBlocks = [];
+    _weeklyViewContainerRectangle;
 
     //flags
     areCalendarEventsReady = false;
@@ -38,7 +39,7 @@ export default class DailyViewCalendar extends LightningElement {
     }
 
     async requestCalendarEvents() {
-        if (!this.calendarEventsPayload) {
+        if (!this.calendarEventsPayload && !this.isWeeklyView) {
             const { payload, errorMessage, isError } = await getCalendarEvents({
                 startDate: {
                     year: this.pivotDate.getFullYear(),
@@ -241,32 +242,80 @@ export default class DailyViewCalendar extends LightningElement {
         const dayColumn = this.template.querySelector('.day-column');
 
         if (dayColumn) {
-            const rect = dayColumn.getBoundingClientRect();
 
             const height = this.calendarEventsMap[event.target.dataset.id].height;
-            event.target.style.height = 'auto';
-            const autoHeight = event.target.getBoundingClientRect().height;
-            const autoBottom = event.target.getBoundingClientRect().bottom;
+            const width = event.target.getBoundingClientRect().width;
 
-            if (autoBottom <= rect.bottom) {
-                event.target.style.height = (autoHeight < height) ? `${height}px` : 'auto';
-                event.target.style.zIndex = '60';
+            this.calendarEventsMap[event.target.dataset.id].width = event.target.style.width;
+            
+            event.target.style.height = 'auto';
+            event.target.style.width = 'auto';
+
+            const autoHeight = event.target.getBoundingClientRect().height;
+            const autoWidth = event.target.getBoundingClientRect().width;
+
+            const autoBottom = event.target.getBoundingClientRect().bottom;
+            if(this.isWeeklyView) {
+                this.dispatchEvent(new CustomEvent('requestrectangle', { detail: this }));
             } else {
-                const topOffset = autoBottom - rect.bottom;
-                event.target.style.transform = `translateY(-${topOffset}px)`;
+                this.weeklyViewContainerRectangle = {
+                    right: dayColumn.getBoundingClientRect().right,
+                    bottom: dayColumn.getBoundingClientRect().bottom,
+                }
+            }
+            const autoRight = event.target.getBoundingClientRect().right;
+
+            let pendingYTranslation = false;
+            let pendingXTranslation = false;
+            let topOffset;
+            let leftOffset;
+
+            if (autoBottom <= this._weeklyViewContainerRectangle.bottom) {
+                event.target.style.height = (autoHeight < height) ? `${height}px` : 'auto';
+            } else {
+                topOffset = autoBottom - this._weeklyViewContainerRectangle.bottom;
+                pendingYTranslation = true;
                 event.target.dataset.topOffset = topOffset;
+            }
+
+            if (autoRight <= this._weeklyViewContainerRectangle.right) {
+                if (autoWidth < width) {
+                    event.target.style.width = `${width}px`;
+                } else {
+                    event.target.style.width = `auto`;
+                    dayColumn.style.overflow = `visible`;
+                }
+            } else {
+                leftOffset = autoRight - this._weeklyViewContainerRectangle.right;
+                pendingXTranslation = true;
+                event.target.dataset.leftOffset = leftOffset;
+                dayColumn.style.overflow = `visible`;
+            }
+
+            event.target.style.zIndex = '19';
+
+            if(pendingYTranslation && pendingXTranslation) {
+                event.target.style.transform = `translateX(-${leftOffset}px) translateY(-${topOffset}px)`;
+            } else if (pendingYTranslation) {
+                event.target.style.transform = `translateY(-${topOffset}px)`;
+            } else if (pendingXTranslation) {
+                event.target.style.transform = `translateX(-${leftOffset}px)`;
             }
         }
     }
 
     handleMouseLeave(event) {
-        const topOffset = Number(event.target.dataset.topOffset || 0);
-        if (topOffset <= 0) {
-            event.target.style.height = `${this.calendarEventsMap[event.target.dataset.id].height}px`;
-        } else {
-            event.target.style.transform = `translateY(0px)`;
-            event.target.dataset.topOffset = 0;
-        }
+        const dayColumn = this.template.querySelector('.day-column');
+
+        event.target.style.height = `${this.calendarEventsMap[event.target.dataset.id].height}px`;
+        event.target.style.transform = `translateY(0px)`;
+        event.target.dataset.topOffset = 0;
+
+        event.target.style.width = this.calendarEventsMap[event.target.dataset.id].width;
+        event.target.style.transform = `translateX(0px)`;
+        event.target.dataset.leftOffset = 0;
+
+        dayColumn.style.overflow = 'hidden';
         event.target.style.zIndex = 'auto';
     }
 
@@ -284,11 +333,24 @@ export default class DailyViewCalendar extends LightningElement {
         }
     }
 
+    @api
+    get weeklyViewContainerRectangle() {
+        return this._weeklyViewContainerRectangle;
+    }
+
+    set weeklyViewContainerRectangle(newWeeklyViewContainerRectangle) {
+        this._weeklyViewContainerRectangle = newWeeklyViewContainerRectangle;
+    }
+
     get currentDayName() {
         return WEEK_DAYS_NAMES[this._pivotDate.getDay()];
     }
 
     get hourBlockClass() {
         return this.isToday ? 'hour-block today-background' : 'hour-block';
+    }
+
+    get containerClass() {
+        return this.isWeeklyView ? '' : 'daily-view-container';
     }
 }

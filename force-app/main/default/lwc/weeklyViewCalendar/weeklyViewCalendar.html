@@ -1,6 +1,6 @@
 <template>
+    <template if:false={isLoading}>
     <div class="weekly-view-container">
-        <template if:false={isLoading}>
             <!-- header -->
             <h3 class="day-name-cell"> Time </h3>
             <template for:each={weekDays} for:item="weekDay">
@@ -17,9 +17,19 @@
                 </template>
             </div>
             <template for:each={weekDays} for:item="weekDay">
-                <c-daily-view-calendar key={weekDay.dateString} pivot-date={pivotDate} is-today={weekDay.isToday}>
+                <c-daily-view-calendar key={weekDay.dateString} 
+                pivot-date={weekDay.pivotDate} 
+                is-weekly-view={truthy} 
+                is-today={weekDay.isToday} 
+                calendar-events-payload={weekDay.calendarEventsPayload}
+                onrequestrectangle={handleContainerRectangleRequest}>
                 </c-daily-view-calendar>
             </template>
-        </template>
-    </div>
+        </div>
+    </template>
+    <template if:true={isLoading}>
+        <div class="spinner-container">
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+    </template>
 </template>
