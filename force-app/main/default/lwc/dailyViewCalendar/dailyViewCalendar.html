@@ -1,18 +1,19 @@
 <template>
         <!-- When used by daily view -->
     <template if:false={isLoading}>
-        <template if:true={isWeeklyView}>
-            <div class="daily-view-container">
-                <h5 class="hours-rule-header"> Time </h5>
-                <h5 class="day-column-header"> {currentDayName} </h5>
-                <div class="hours-rule-column">
-                    <template for:each={dayHoursBlocks} for:item="hourBlock">
-                        <div key={hourBlock.hour} class="hour-block">
-                            <div class="first-half-hour-block">{hourBlock.hourString}</div>
-                            <div class="second-half-hour-block"></div>
-                        </div>
-                    </template>
-                </div>
+        <div class={containerClass}>
+                <template if:false={isWeeklyView}>
+                    <h5 class="hours-rule-header"> Time </h5>
+                    <h5 class="day-column-header"> {currentDayName} </h5>
+                    <div class="hours-rule-column">
+                        <template for:each={dayHoursBlocks} for:item="hourBlock">
+                            <div key={hourBlock.hour} class="hour-block">
+                                <div class="first-half-hour-block">{hourBlock.hourString}</div>
+                                <div class="second-half-hour-block"></div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
                 <div class="day-column">
                     <template for:each={dayHoursBlocks} for:item="hourBlock">
                         <div key={hourBlock.hour} class="hour-block">
@@ -37,18 +38,7 @@
                     </template>
                 </div>
             </div>
-        </template>
-        <!-- When used by Weekly View -->
-        <template if:false={isWeeklyView}>
-            <div class="day-column">
-                <template for:each={dayHoursBlocks} for:item="hourBlock">
-                    <div key={hourBlock.hour} class={hourBlockClass}>
-                        <div class="first-half-hour-block"></div>
-                        <div class="second-half-hour-block"></div>
-                    </div>
-                </template>
-            </div>
-        </template>
+        
     </template>
     <template if:true={isLoading}>
         <div class="spinner-container">

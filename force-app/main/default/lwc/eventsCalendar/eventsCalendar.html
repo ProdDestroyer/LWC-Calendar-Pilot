@@ -54,10 +54,10 @@
             <!-- Views Panel -->
             <div class="view-panel">
                 <template if:true={isMonthlyViewSelected}>
-                    <c-monthly-view-calendar pivot-date={pivotDate} user-time-zone={userTimeZone}></c-monthly-view-calendar>
+                    <c-monthly-view-calendar onmonthtileclick={handleMonthTileClick} pivot-date={pivotDate} user-time-zone={userTimeZone}></c-monthly-view-calendar>
                 </template>
                 <template if:true={isDailyViewSelected}>
-                    <c-daily-view-calendar pivot-date={pivotDate} is-weekly-view="true" user-time-zone={userTimeZone}></c-daily-view-calendar>
+                    <c-daily-view-calendar pivot-date={pivotDate} user-time-zone={userTimeZone} calendar-events-payload={calendarEventsPayload}></c-daily-view-calendar>
                 </template>
                 <template if:true={isWeeklyViewSelected}>
                     <c-weekly-view-calendar pivot-date={pivotDate} user-time-zone={userTimeZone}></c-weekly-view-calendar>
