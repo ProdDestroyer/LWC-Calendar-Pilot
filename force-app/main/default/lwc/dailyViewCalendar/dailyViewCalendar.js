@@ -346,8 +346,8 @@ export default class DailyViewCalendar extends LightningElement {
         return WEEK_DAYS_NAMES[this._pivotDate.getDay()];
     }
 
-    get hourBlockClass() {
-        return this.isToday ? 'hour-block today-background' : 'hour-block';
+    get dayColumnClass() {
+        return this.isToday && this.isWeeklyView ? 'day-column today-background' : 'day-column';
     }
 
     get containerClass() {

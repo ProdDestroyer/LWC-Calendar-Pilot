@@ -19,10 +19,6 @@
     top: 0;
 }
 
-.today-background {
-    background-color: aliceblue;
-}
-
 .spinner-container {
     height: 100vh;
     display: flex;

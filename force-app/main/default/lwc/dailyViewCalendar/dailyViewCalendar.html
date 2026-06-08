@@ -14,7 +14,7 @@
                         </template>
                     </div>
                 </template>
-                <div class="day-column">
+                <div class={dayColumnClass}>
                     <template for:each={dayHoursBlocks} for:item="hourBlock">
                         <div key={hourBlock.hour} class="hour-block">
                             <div class="first-half-hour-block"></div>
