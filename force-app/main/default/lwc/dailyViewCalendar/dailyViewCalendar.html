@@ -1,48 +1,95 @@
 <template>
-        <!-- When used by daily view -->
+    <!-- When used by daily view -->
     <template if:false={isLoading}>
         <div class={containerClass}>
-                <template if:false={isWeeklyView}>
-                    <h5 class="hours-rule-header"> Time </h5>
-                    <h5 class="day-column-header"> {currentDayName} </h5>
-                    <div class="hours-rule-column">
-                        <template for:each={dayHoursBlocks} for:item="hourBlock">
-                            <div key={hourBlock.hour} class="hour-block">
-                                <div class="first-half-hour-block">{hourBlock.hourString}</div>
-                                <div class="second-half-hour-block"></div>
-                            </div>
-                        </template>
-                    </div>
-                </template>
-                <div class={dayColumnClass}>
+            <template if:false={isWeeklyView}>
+                <h5 class="hours-rule-header"> Time </h5>
+                <h5 class="day-column-header"> {currentDayName} </h5>
+                <div class="hours-rule-column">
                     <template for:each={dayHoursBlocks} for:item="hourBlock">
                         <div key={hourBlock.hour} class="hour-block">
-                            <div class="first-half-hour-block"></div>
+                            <div class="first-half-hour-block">{hourBlock.hourString}</div>
                             <div class="second-half-hour-block"></div>
                         </div>
                     </template>
-                    <template if:true={areCalendarEventsReady}>
-                        <template for:each={calendarEvents} for:item="calendarEvent">
-                            <div 
-                             key={calendarEvent.id}
-                             style={calendarEvent.style}
-                             class="calendar-event-box"
-                             onmouseenter={handleCalendarEventHover}
-                             onmouseleave={handleMouseLeave}
-                             data-id={calendarEvent.id}>
-                                <h2><span>Title: </span>{calendarEvent.title}</h2>
-                                <h4><span>Start Time: </span>{calendarEvent.startTimeString}</h4>
-                                <h4><span>End Time: </span>{calendarEvent.endTimeString}</h4>
-                            </div>
-                        </template>
-                    </template>
                 </div>
+            </template>
+            <div lwc:ref="dayColumn" class={dayColumnClass} onclick={handleDayColumnClick}>
+                <template for:each={dayHoursBlocks} for:item="hourBlock">
+                    <div key={hourBlock.hour} class="hour-block">
+                        <div class="first-half-hour-block"></div>
+                        <div class="second-half-hour-block"></div>
+                    </div>
+                </template>
+                <template if:true={areCalendarEventsReady}>
+                    <template for:each={calendarEvents} for:item="calendarEvent">
+                        <div key={calendarEvent.id} style={calendarEvent.style} class="calendar-event-box"
+                            onmouseenter={handleCalendarEventHover} onmouseleave={handleMouseLeave}
+                            data-id={calendarEvent.id}>
+                            <h2><span>Title: </span>{calendarEvent.title}</h2>
+                            <h4><span>Start Time: </span>{calendarEvent.startTimeString}</h4>
+                            <h4><span>End Time: </span>{calendarEvent.endTimeString}</h4>
+                        </div>
+                    </template>
+                </template>
             </div>
-        
+        </div>
+
     </template>
     <template if:true={isLoading}>
         <div class="spinner-container">
             <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
         </div>
+    </template>
+    <template if:true={showModal}>
+         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+       <div class="slds-modal__container">
+        <!-- modal header start -->
+        <header class="slds-modal__header">
+            <button
+                class="slds-button slds-button_icon slds-button_icon-bare slds-modal__close"
+                title="Close"
+                onclick={hideModal}>
+                <lightning-icon
+                    icon-name="utility:close"
+                    alternative-text="Close"
+                    size="small"
+                    class="close-icon">
+                </lightning-icon>
+                <span class="slds-assistive-text">Close</span>
+            </button>
+        
+            <h2 id="modal-heading-01"
+                class="slds-text-heading_medium slds-hyphenate">
+                Welcome in Apex Hours
+            </h2>
+        </header>
+      
+          <!-- modal body start -->
+          <div class="slds-modal__content slds-p-around_medium modal-body" id="modal-content-id-1">
+              <!-- <lightning-input type="datetime" name="startTimePicker" label="Start Time" value={modalStartTime}></lightning-input> -->
+              <div><span style="font-weight: bold">StartTime</span><lightning-input variant="label-hidden" type="datetime" name="startTimePicker" label="Start Time" value={modalStartTime}></lightning-input></div>
+              <div><span style="font-weight: bold">EndTime</span><lightning-input variant="label-hidden" type="datetime" name="endTimePicker" label="End Time" value={modalEndTime}></lightning-input></div>
+                <div><span style="font-weight: bold">Title</span><lightning-input type="text" label="Title" variant="label-hidden"></lightning-input></div>
+                <div><span style="font-weight: bold">Type</span><lightning-combobox
+                variant="label-hidden"
+                name="eventTypePicker"
+                label="Type"
+                value={eventTypePickerValue}
+                placeholder="Select Progress"
+                options={eventTypeOptions}
+                onchange={handleEventTypePickerChange} >
+                </lightning-combobox></div>
+          </div>
+
+          <!-- modal footer start-->
+          <footer class="slds-modal__footer">
+             <button class="slds-button slds-button_neutral" onclick={hideModal}>Create</button>
+             <button class="slds-button slds-button_neutral" onclick={hideModal}>Cancel</button>
+          </footer>
+       
+       </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
 </template>

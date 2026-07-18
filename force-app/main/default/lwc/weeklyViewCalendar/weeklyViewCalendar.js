@@ -103,7 +103,7 @@ export default class WeeklyViewCalendar extends LightningElement {
                 dateString: currentLoopDate.toDateString(),
                 dateNumber: currentLoopDate.getDate(), 
                 dayName: WEEK_DAYS_NAMES[currentLoopDate.getDay()],
-                isToday: (ARE_DATES_EQUAL(currentLoopDate, new Date())),
+                isToday: (ARE_DATES_EQUAL(currentLoopDate, USER_TIME_TO_DATE_TIME(BUILD_CURRENT_USER_TIME(new Date(), this.userTimeZone)))),
                 calendarEventsPayload: this.calendarEventsMap[`${(currentLoopDate.getDate() > 9 ? '': '0')}${currentLoopDate.getDate()}`] || [],
             });
         }

@@ -1,4 +1,5 @@
 export const DAY_MINUTES_AMOUNT = 1440;
+export const CALENDAR_EVENT_TYPES = [{label: 'Health', value: 'health'}, {label: 'Social', value: 'social'}, {label: 'Work', value: 'work'}];
 export const WEEK_DAYS_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 export const MONTHS_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 export const BUILD_DAY_HOURS_BLOCKS = () => {
@@ -59,7 +60,7 @@ export const BUILD_CURRENT_USER_TIME = (date, timeZone) => {
     });
 
     const parts = formatter.formatToParts(new Date(date));
-
+    
     return Object.fromEntries(
         parts
             .filter(p => p.type !== 'literal')

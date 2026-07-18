@@ -98,3 +98,23 @@ h5 {
 .calendar-event-box span{
     font-weight: 700; 
 }
+
+.modal-body{
+    /* justify-content: center; */
+}
+
+.slds-modal__close {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.slds-modal__close:hover,
+.slds-modal__close:focus {
+    background: transparent;
+}
+
+.close-icon {
+    --sds-c-icon-color-foreground-default: white;
+    --slds-c-icon-color-foreground: white;
+}

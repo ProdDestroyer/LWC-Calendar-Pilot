@@ -109,7 +109,7 @@ export default class MonthlyViewCalendar extends LightningElement {
                         dateNumber: currentDate.getDate(),
                         dateString: currentDate.toDateString(),
                         monthNumber: currentDate.getMonth(),
-                        className: !grayedOut ? (ARE_DATES_EQUAL(currentDate, new Date())) ? 'date-tile today-background' : 'date-tile' : 'date-tile grayed-out',
+                        className: !grayedOut ? (ARE_DATES_EQUAL(currentDate, USER_TIME_TO_DATE_TIME(BUILD_CURRENT_USER_TIME(new Date(), this.userTimeZone)))) ? 'date-tile today-background' : 'date-tile' : 'date-tile grayed-out',
                         calendarEvents: tileCalendarEvents,
                         truncateEvents: tileCalendarEvents.length > 3,
                     });

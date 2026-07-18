@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
-import { BUILD_CURRENT_USER_TIME, WEEK_DAYS_NAMES, BUILD_DAY_HOURS_BLOCKS, DAY_MINUTES_AMOUNT, USER_TIME_TO_DATE_TIME } from 'c/utils';
+import { BUILD_CURRENT_USER_TIME, WEEK_DAYS_NAMES, BUILD_DAY_HOURS_BLOCKS, DAY_MINUTES_AMOUNT, USER_TIME_TO_DATE_TIME, CALENDAR_EVENT_TYPES} from 'c/utils';
 import getCalendarEvents from '@salesforce/apex/EventsCalendarController.getCalendarEvents'
 
 export default class DailyViewCalendar extends LightningElement {
@@ -20,6 +20,12 @@ export default class DailyViewCalendar extends LightningElement {
     isLoading = true;
     firstTimeConnected = true;
 
+    //modal
+    showModal = false;
+    eventTypePickerValue = 'health'
+    modalStartTime;
+    modalEndTime;
+    timeShift;
 
     connectedCallback() {
         if (this.firstTimeConnected) {
@@ -90,7 +96,6 @@ export default class DailyViewCalendar extends LightningElement {
             this.areCalendarEventsReady = true;
         }
     }
-
 
     createColumnsList() {
         this.calendarEvents.sort((a, b) => new Date(a.startTimeInMinutes) - new Date(b.startTimeInMinutes));
@@ -247,7 +252,7 @@ export default class DailyViewCalendar extends LightningElement {
             const width = event.target.getBoundingClientRect().width;
 
             this.calendarEventsMap[event.target.dataset.id].width = event.target.style.width;
-            
+
             event.target.style.height = 'auto';
             event.target.style.width = 'auto';
 
@@ -255,7 +260,7 @@ export default class DailyViewCalendar extends LightningElement {
             const autoWidth = event.target.getBoundingClientRect().width;
 
             const autoBottom = event.target.getBoundingClientRect().bottom;
-            if(this.isWeeklyView) {
+            if (this.isWeeklyView) {
                 this.dispatchEvent(new CustomEvent('requestrectangle', { detail: this }));
             } else {
                 this.weeklyViewContainerRectangle = {
@@ -294,7 +299,7 @@ export default class DailyViewCalendar extends LightningElement {
 
             event.target.style.zIndex = '19';
 
-            if(pendingYTranslation && pendingXTranslation) {
+            if (pendingYTranslation && pendingXTranslation) {
                 event.target.style.transform = `translateX(-${leftOffset}px) translateY(-${topOffset}px)`;
             } else if (pendingYTranslation) {
                 event.target.style.transform = `translateY(-${topOffset}px)`;
@@ -317,6 +322,49 @@ export default class DailyViewCalendar extends LightningElement {
 
         dayColumn.style.overflow = 'hidden';
         event.target.style.zIndex = 'auto';
+    }
+
+    handleDayColumnClick(event) {
+        const svg = event.currentTarget;
+        const rect = svg.getBoundingClientRect();
+        const y = event.clientY - rect.top;
+
+        const dayColumn = this.refs.dayColumn;
+        const dayColumnHeight = dayColumn.getBoundingClientRect().height
+        const minuteHeightInPX = dayColumnHeight / 1440;
+
+        const startTimeMinutesAmount = (y / minuteHeightInPX);
+        const startHour = Math.trunc(startTimeMinutesAmount / 60);
+        const startMinute = Math.trunc(startTimeMinutesAmount % 60);
+
+        const timeStamp = new Date();//local time
+        const userTime = BUILD_CURRENT_USER_TIME(timeStamp, this.userTimeZone);//tokyo time + 9 hrs
+        const pivotedTime = USER_TIME_TO_DATE_TIME(userTime);
+
+        const msGap = pivotedTime - timeStamp;
+
+        const clickedTime = new Date(this.pivotDate.getFullYear(), 
+        this.pivotDate.getMonth(), 
+        this.pivotDate.getDate(),
+        startHour, startMinute, 0);
+
+        const unpivotedTime = new Date(clickedTime.getTime() - msGap);
+        const suggestedEndTime = new Date(unpivotedTime);
+        suggestedEndTime.setMinutes(suggestedEndTime.getMinutes() + 15);
+
+        this.modalStartTime = unpivotedTime.toISOString();
+        this.modalEndTime = suggestedEndTime.toISOString();
+        this.showModal = true;
+    }
+
+    handleEventTypePickerChange(event) {
+        this.eventTypePickerValue = event.detail.value;
+    }
+
+    hideModal() {
+        //create calendarEvent
+        this.eventTypePickerValue = 'health';
+        this.showModal = false;
     }
 
     //=========================================== GETTERS & SETTERS ===========================================
@@ -352,5 +400,9 @@ export default class DailyViewCalendar extends LightningElement {
 
     get containerClass() {
         return this.isWeeklyView ? '' : 'daily-view-container';
+    }
+
+    get eventTypeOptions() {
+        return CALENDAR_EVENT_TYPES;
     }
 }

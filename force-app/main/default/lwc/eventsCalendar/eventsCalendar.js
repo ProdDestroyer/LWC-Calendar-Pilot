@@ -1,11 +1,11 @@
 import { LightningElement } from 'lwc';
-import { WEEK_DAYS_NAMES, MONTHS_NAMES } from 'c/utils';
+import { WEEK_DAYS_NAMES, MONTHS_NAMES, USER_TIME_TO_DATE_TIME, BUILD_CURRENT_USER_TIME } from 'c/utils';
 import getUserTimeZone from '@salesforce/apex/EventsCalendarController.getUserTimeZone';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class EventsCalendar extends LightningElement {
 
-    selectedViewType = 'monthly';
+    selectedViewType = 'weekly';
     pivotDate;
     isLoading = true;
     userTimeZone;
@@ -13,9 +13,10 @@ export default class EventsCalendar extends LightningElement {
 
     //================================================= HANDLERS =================================================
 
-    connectedCallback() {
-        this.pivotDate = this.handlePivotDateReset(new Date());
-        this.requestUserTimeZone();
+    async connectedCallback() {
+        await this.requestUserTimeZone();
+        this.pivotDate = this.handlePivotDateReset(USER_TIME_TO_DATE_TIME(BUILD_CURRENT_USER_TIME(new Date(), this.userTimeZone)));
+        this.isLoading = false;
     }
 
     async requestUserTimeZone() {
@@ -25,7 +26,6 @@ export default class EventsCalendar extends LightningElement {
         } else {
             this.userTimeZone = JSON.parse(payload);
         }
-        this.isLoading = false;
     }
 
     handleViewTypeOptionsChange(event) {
@@ -34,7 +34,7 @@ export default class EventsCalendar extends LightningElement {
     }
 
     handleTodayClick() {
-        this.pivotDate = this.handlePivotDateReset(new Date());
+        this.pivotDate = this.handlePivotDateReset(USER_TIME_TO_DATE_TIME(BUILD_CURRENT_USER_TIME(new Date(), this.userTimeZone)));
     }
 
     handlePivotDateReset = (baseDate) => {
