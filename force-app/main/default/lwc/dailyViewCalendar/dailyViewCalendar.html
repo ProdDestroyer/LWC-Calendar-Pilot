@@ -68,9 +68,9 @@
           <!-- modal body start -->
           <div class="slds-modal__content slds-p-around_medium modal-body" id="modal-content-id-1">
               <!-- <lightning-input type="datetime" name="startTimePicker" label="Start Time" value={modalStartTime}></lightning-input> -->
-              <div><span style="font-weight: bold">StartTime</span><lightning-input variant="label-hidden" type="datetime" name="startTimePicker" label="Start Time" value={modalStartTime}></lightning-input></div>
-              <div><span style="font-weight: bold">EndTime</span><lightning-input variant="label-hidden" type="datetime" name="endTimePicker" label="End Time" value={modalEndTime}></lightning-input></div>
-                <div><span style="font-weight: bold">Title</span><lightning-input type="text" label="Title" variant="label-hidden"></lightning-input></div>
+              <div><span style="font-weight: bold">StartTime</span><lightning-input lwc:ref= "startTime" variant="label-hidden" type="datetime" name="startTimePicker" label="Start Time" value={modalStartTime} onchange={handleStartTimeChange}></lightning-input></div>
+              <div><span style="font-weight: bold">EndTime</span><lightning-input lwc:ref="endTime" variant="label-hidden" type="datetime" name="endTimePicker" label="End Time" value={modalEndTime} onchange={handleEndTimeChange}></lightning-input></div>
+                <div><span style="font-weight: bold">Title</span><lightning-input lwc:ref="title" type="text" label="Title" variant="label-hidden"></lightning-input></div>
                 <div><span style="font-weight: bold">Type</span><lightning-combobox
                 variant="label-hidden"
                 name="eventTypePicker"
@@ -84,7 +84,7 @@
 
           <!-- modal footer start-->
           <footer class="slds-modal__footer">
-             <button class="slds-button slds-button_neutral" onclick={hideModal}>Create</button>
+             <button class="slds-button slds-button_neutral" onclick={handleCreateClick}>Create</button>
              <button class="slds-button slds-button_neutral" onclick={hideModal}>Cancel</button>
           </footer>
        

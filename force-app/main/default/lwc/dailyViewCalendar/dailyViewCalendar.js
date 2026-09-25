@@ -1,6 +1,10 @@
 import { LightningElement, api } from 'lwc';
-import { BUILD_CURRENT_USER_TIME, WEEK_DAYS_NAMES, BUILD_DAY_HOURS_BLOCKS, DAY_MINUTES_AMOUNT, USER_TIME_TO_DATE_TIME, CALENDAR_EVENT_TYPES} from 'c/utils';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { BUILD_CURRENT_USER_TIME, WEEK_DAYS_NAMES, BUILD_DAY_HOURS_BLOCKS, DAY_MINUTES_AMOUNT, USER_TIME_TO_DATE_TIME, CALENDAR_EVENT_TYPES } from 'c/utils';
 import getCalendarEvents from '@salesforce/apex/EventsCalendarController.getCalendarEvents'
+import createCalendarEvent from '@salesforce/apex/EventsCalendarController.createCalendarEvent'
+
+const CALENDAR_EVENT_CREATE_SUCCESS = 'Calendar Event Successfully Created';
 
 export default class DailyViewCalendar extends LightningElement {
 
@@ -22,7 +26,7 @@ export default class DailyViewCalendar extends LightningElement {
 
     //modal
     showModal = false;
-    eventTypePickerValue = 'health'
+    eventTypePickerValue = 'Health'
     modalStartTime;
     modalEndTime;
     timeShift;
@@ -72,11 +76,16 @@ export default class DailyViewCalendar extends LightningElement {
     processCalendarEvents(payload) {
         const calendarEvents = JSON.parse(payload);
         calendarEvents.forEach(calendarEvent => {
-            const startTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.Start_Time__c), this.userTimeZone);
-            const endTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.End_Time__c), this.userTimeZone);
-            const eventType = calendarEvent.Type__c;
+            this.calendarEvents.push(this.processCalendarEvent(calendarEvent));
+        });
+    }
 
-            this.calendarEvents.push({
+    processCalendarEvent(calendarEvent) {
+        const startTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.Start_Time__c), this.userTimeZone);
+        const endTime = BUILD_CURRENT_USER_TIME(new Date(calendarEvent.End_Time__c), this.userTimeZone);
+        const eventType = calendarEvent.Type__c;
+
+        return {
                 startTime,
                 endTime,
                 originalStartTime: startTime,
@@ -84,17 +93,20 @@ export default class DailyViewCalendar extends LightningElement {
                 title: calendarEvent.Title__c,
                 type: eventType,
                 id: calendarEvent.Id,
-            });
-        });
+            };
     }
 
     renderedCallback() {
         if (!this.isLoading && !this.areCalendarEventsReady) {
-            const dayColumn = this.template.querySelector('.day-column');
-            this.calculateVerticalAlignments(dayColumn);
-            this.calculateHorizontalAlignments(dayColumn);
+            this.calculateAlignments();
             this.areCalendarEventsReady = true;
         }
+    }
+
+    calculateAlignments() {
+        const dayColumn = this.template.querySelector('.day-column');
+        this.calculateVerticalAlignments(dayColumn);
+        this.calculateHorizontalAlignments(dayColumn);
     }
 
     createColumnsList() {
@@ -343,10 +355,10 @@ export default class DailyViewCalendar extends LightningElement {
 
         const msGap = pivotedTime - timeStamp;
 
-        const clickedTime = new Date(this.pivotDate.getFullYear(), 
-        this.pivotDate.getMonth(), 
-        this.pivotDate.getDate(),
-        startHour, startMinute, 0);
+        const clickedTime = new Date(this.pivotDate.getFullYear(),
+            this.pivotDate.getMonth(),
+            this.pivotDate.getDate(),
+            startHour, startMinute, 0);
 
         const unpivotedTime = new Date(clickedTime.getTime() - msGap);
         const suggestedEndTime = new Date(unpivotedTime);
@@ -361,10 +373,46 @@ export default class DailyViewCalendar extends LightningElement {
         this.eventTypePickerValue = event.detail.value;
     }
 
+    async handleCreateClick() {
+        const startTime = this.refs.startTime.value;
+        const endTime = this.refs.endTime.value;
+        const title = this.refs.title.value;
+        const type = this.eventTypePickerValue;
+
+        const calendarEventWrapper = { title, type, startTime, endTime };
+        const { payload, errorMessage, isError } = await createCalendarEvent({ calendarEventWrapper });
+        if (!isError) {
+            this.showToast('Success', CALENDAR_EVENT_CREATE_SUCCESS, 'success');
+            this.calendarEvents.push(this.processCalendarEvent(JSON.parse(payload)));
+            this.calculateAlignments();
+            this.hideModal();
+        } else {
+            this.showToast('Error', errorMessage, 'error');
+        }
+    }
+
+    handleStartTimeChange({ target }) {
+        console.log('startTime Change1: ', new Date(target.value).toLocaleString());
+    }
+    
+    handleEndTimeChange({ target }) {
+        console.log('endTime Change: ', target.value);
+    }
+
     hideModal() {
         //create calendarEvent
-        this.eventTypePickerValue = 'health';
+        this.eventTypePickerValue = 'Health';
         this.showModal = false;
+    }
+
+    showToast(title, message, variant) {
+        const evt = new ShowToastEvent({
+            title,
+            message,
+            variant,
+            mode: 'dismissable' //could try sticky
+        });
+        this.dispatchEvent(evt);
     }
 
     //=========================================== GETTERS & SETTERS ===========================================

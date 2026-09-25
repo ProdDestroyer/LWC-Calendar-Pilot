@@ -37,13 +37,43 @@ public with sharing class EventsCalendarController {
     }
 
     @AuraEnabled
+    public static ResponseWrapper createCalendarEvent(CalendarEventWrapper calendarEventWrapper){
+        try {
+            String title = calendarEventWrapper.title;
+            String type = calendarEventWrapper.type;
+            Datetime startTime = calendarEventWrapper.startTime;
+            Datetime endTime = calendarEventWrapper.endTime;
+
+            Calendar_Event__c calendarEventToInsert = new Calendar_Event__c(
+                Title__c = title,
+                Type__c = type,
+                Start_Time__c = startTime,
+                End_Time__c = endTime
+            );
+
+            insert calendarEventToInsert;
+
+            return new ResponseWrapper(JSON.serialize(calendarEventToInsert), null, false);
+        } catch (Exception e) {
+            return new ResponseWrapper(null, e.getMessage() + '\n' + e.getLineNumber(), true);
+        }
+    }
+
+    @AuraEnabled
     public static ResponseWrapper getUserTimeZone(){
         try {
             return new ResponseWrapper(JSON.serialize(UserInfo.getTimeZone().getID()), null, false);
         } catch (Exception e) {
             return new ResponseWrapper(null, e.getMessage() + '\n' + e.getLineNumber(), true);
         }
-    }   
+    }
+
+    public class CalendarEventWrapper {
+        @AuraEnabled public String title {get;set;}
+        @AuraEnabled public String type {get;set;}
+        @AuraEnabled public DateTime startTime {get;set;}
+        @AuraEnabled public DateTime endTime {get;set;}
+    }
 
     public class ResponseWrapper {
         @AuraEnabled public String payload {get;set;}
